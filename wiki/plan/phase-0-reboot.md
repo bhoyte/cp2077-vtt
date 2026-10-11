@@ -40,6 +40,7 @@ Streamer Mode on (licensed music) · crowd density Low · HUD elements off where
 
 ## 6. Freeze
 Zip `bin\x64\plugins`, `red4ext` (no logs), `r6`, `engine`, `archive\pc\mod` + `bin\x64\Cyberpunk2077.exe` hash → `D:\cp2077-stack\stack-2.31-YYYYMMDD.zip`.
+Also copy the **whole game folder** to `D:\cp2077-stack\game-2.31\` (Steam-only rollback path, Q-03) and test F-019: with Steam running, launch `bin\x64\Cyberpunk2077.exe` directly and check the game starts.
 **spike-report** the result: re-verify F-001/F-004 with today's date, update F-017, log it.
 
 ## 7. Also install

@@ -15,3 +15,11 @@ Append-only. Format: `## [YYYY-MM-DD] op | title`. Newest at the bottom. `rg "^#
 
 ## [2026-10-11] lint | First lint pass
 - `python tools/wiki.py lint` clean; status dashboard verified.
+
+## [2026-10-11] decide | User answers Q-01, Q-02, Q-03
+- Twitch only; no paid effects on rules or dice (cosmetic only in Season 0); Steam unless GOG is proven necessary. Added F-019 (launching the exe directly avoids Steam updates, hypothesis).
+
+## [2026-10-11] build | B1 rules core, provable dice, balance simulator
+- Code: `arcade/dice`, `arcade/rules`, `arcade/sim`, `content/rules/season0.toml`; 21 tests (unit, replay equality, hypothesis termination property).
+- Four tuning passes recorded in [ruleset](design/ruleset.md#tuning-history-v0-pass-2026-10-11). New mechanics: Heat, Hold; Taunt and Short circuit reworked.
+- Result (4,000 gigs): 5.58 rounds/encounter, 27.6 % death/gig, 0.2 % wipe, 1.0 % stalemate. Seat leverage uneven → Q-10.

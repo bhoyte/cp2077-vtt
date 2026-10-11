@@ -109,6 +109,12 @@ scope: none
 evidence: none yet
 note: Drives vote-window compensation (ADR-010). Measure in S-06.
 
+### F-019 — Launching `bin\x64\Cyberpunk2077.exe` directly (Steam running) starts the game without Steam applying a pending update
+status: hypothesis
+scope: none
+evidence: none yet
+note: If true, a full game-folder backup on D: is a real rollback path without GOG (Q-03). Test in Phase 0.
+
 ## Host
 
 ### F-017 — The uninstall left the mod layer in the Steam game folder but removed redscript (`engine\` gone)

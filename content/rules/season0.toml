@@ -1,0 +1,35 @@
+# Season 0 ruleset overrides on top of arcade/rules/config.py defaults.
+# Owned by the balance simulator: change a number, rerun
+#   python -m arcade.sim --rules content/rules/season0.toml --ablate
+
+[rules]
+weapon_skill = 2
+range_dv = { close = 8, mid = 11, far = 14 }
+heat_round = 6
+
+[rules.seats.Solo]
+stats = { IRON = 7 }
+
+[rules.enemies.Mook]
+stats = { IRON = 5 }
+specialty = 0
+hp = 10
+sp = 0
+
+[rules.enemies.Soldier]
+stats = { IRON = 6 }
+specialty = 1
+hp = 18
+sp = 2
+
+[rules.enemies.Elite]
+stats = { IRON = 8 }
+specialty = 2
+hp = 35
+sp = 6
+
+[rules.enemies.Boss]
+stats = { IRON = 7 }
+specialty = 2
+hp = 45
+sp = 5

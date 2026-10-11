@@ -88,10 +88,16 @@ Envelope: `{"type": "cmd" | "ack" | "report", "v": "stage.v1", "id": "...", "op"
 
 ## 5. Ledger events (ADR-007), selection
 
-`session.started{commit}` · `squad.joined` · `window.opened{slot, options}` · `vote.cast{user, option, layer, conf}` ·
-`window.closed{tally, winner, tiebreak?}` · `roll{i, purpose, faces, value}` · `check.resolved` · `damage.applied` ·
-`armor.chipped` · `death_save` · `character.flatlined` · `character.created` · `beat.played{beat_id, status}` ·
+Show layer: `session.started{commit}` · `squad.joined` · `window.opened{slot, options}` · `vote.cast{user, option, layer, conf}` ·
+`window.closed{tally, winner, tiebreak?}` · `roll{i, purpose, faces, value}` · `character.created` · `beat.played{beat_id, status}` ·
 `stage.desynced` · `operator.action` · `session.ended{seed}`
+
+Rules layer (implemented, `arcade/rules/events.py`; folding them over the starting encounter reproduces its state exactly):
+`encounter.started` · `initiative.rolled` · `initiative.set{order}` · `round.started` · `heat.rose` · `turn.started` ·
+`attack.rolled` / `check.rolled{natural, extra, modifier, total, dv, success}` · `damage.applied{dice, raw, location, sp, loss, chip, crit}` ·
+`injury.added` · `bled` · `healed` · `status.changed{ALIVE|FLATLINING|DEAD|FLED}` · `death_save{roll, threshold, success}` ·
+`stabilized` · `medkit.used` · `cover.changed` · `pinned` · `taunted` · `blackout` · `ability.used` · `held` · `action.spent` ·
+`encounter.ended{victory|wipe|stalemate}`. Beat selection keys off these (e.g. `damage.applied` with `crit` → crit beat family).
 
 ## 6. Overlay state (orchestrator → overlay, WebSocket)
 Full snapshot on connect, then JSON-patch deltas: `{phase, slot, timer{ends_at_viewer, server_close_at}, options[], tally{}, party[], enemies[], initiative[], dice?, banners[], comms[], commit}`.
