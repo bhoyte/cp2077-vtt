@@ -2,7 +2,7 @@
 type: component
 title: Contracts — scene manifest v2, StageSpec, beats, wire protocol stage.v1, events
 status: draft
-updated: 2026-10-11
+updated: 2026-10-12
 depends_on: [ADR-002, ADR-003, ADR-006, ADR-007]
 ---
 
@@ -91,6 +91,13 @@ Envelope: `{"type": "cmd" | "ack" | "report", "v": "stage.v1", "id": "...", "op"
 Show layer: `session.started{commit}` · `squad.joined` · `window.opened{slot, options}` · `vote.cast{user, option, layer, conf}` ·
 `window.closed{tally, winner, tiebreak?}` · `roll{i, purpose, faces, value}` · `character.created` · `beat.played{beat_id, status}` ·
 `stage.desynced` · `operator.action` · `session.ended{seed}`
+
+B2 slice (`arcade/show`, `arcade/intent`): the clock emits
+`window.opened{slot, seat, options, viewer_close_at, server_close_at, open_seat}`,
+`window.extended{slot, viewer_close_at, server_close_at}`,
+`vote.cast{user, option, layer, conf, slot}`,
+`window.closed{slot, tally, winner, tied, reason}` with `reason` of `timer` or `locked_in`.
+`tied` is true when at least one vote is in and no option leads. The tie-break roll is not drawn in this slice.
 
 Rules layer (implemented, `arcade/rules/events.py`; folding them over the starting encounter reproduces its state exactly):
 `encounter.started` · `initiative.rolled` · `initiative.set{order}` · `round.started` · `heat.rose` · `turn.started` ·

@@ -2,7 +2,7 @@
 type: design
 title: Show clock — round structure and timing budget
 status: draft
-updated: 2026-10-11
+updated: 2026-10-12
 depends_on: [ADR-010, F-016]
 ---
 
@@ -48,3 +48,14 @@ so a 2-hour show is 2 gigs plus a downtime lobby.
 | Negotiation (Face-led) | 15 s | Other squads may `!assist` |
 | Downtime lobby | 45–60 s polls | Spending, upgrades, rent |
 | Lifepath (replacement) | 3 × 20 s | Whole crew votes |
+
+## Slice assumptions (2026-10-12)
+
+`arcade/show/` follows the combat-slot diagram and ADR-010. Approach, negotiation, downtime, and lifepath windows are not scheduled yet. These numbers are not pinned in the design, so the code pins them on `ClockConfig` (overridable):
+
+- Quorum **N is 3**. ADR-010 uses N for early lock and the +3 s extension and does not define it. Three means two accounts cannot lock a window. This is separate from squad `N_min` (default 2), which only decides an open seat.
+- **Minimum 6 s** clamps the scheduled viewer window (`window_s` below 6 is rejected). Early lock is separate and can close sooner, once the leader has held ≥ 60 % of ≥ N votes for 3 s (the design's ~5–8 s band). A further vote for the same leader does not restart that 3 s hold.
+- A ballot counts when `window_open ≤ ts < server_close`. The on-screen timer is zero during grace; the server still accepts until `viewer_close + L`. The +3 s extension check runs when simulated time moves *past* `open + 6 s`, so a ballot timestamped on that instant is included. An empty tally closes on the timer with no winner; temperament is not applied in this slice.
+- Default durations: resolve 0.3 s, party dice 2.0 s, party beat **4 s** (inside 3–6), enemy dice 1.5 s, enemy beat **3 s** (inside 2–4).
+- Consecutive enemy slots with the same non-empty target collapse into one volley: one dice interval and one beat. Differing or missing targets stay separate.
+- The next party window opens at the instant the previous beat starts, and does not overlap the previous window. Enemy slots never open a window. A tie leaves `winner` unset; the clock does not roll the tie-break die.

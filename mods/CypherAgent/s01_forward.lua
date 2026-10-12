@@ -1,0 +1,19 @@
+-- Snippet already applied to the live CypherAgent init.lua (backup: init.lua.pre-s01).
+-- Forward cam_* and pup_* bridge commands to GetMod("ArcadeSpike").
+--
+-- Insert immediately before the "no handler" print in executeCommand:
+--
+--   if type(action) == "string" and (string.sub(action, 1, 4) == "cam_" or string.sub(action, 1, 4) == "pup_") then
+--     local spike = GetMod("ArcadeSpike")
+--     if spike == nil or type(spike.handle_command) ~= "function" then
+--       print("[Cypher ERROR] ArcadeSpike not loaded (need CET reload after install)")
+--       return
+--     end
+--     local okSpike, errSpike = pcall(function()
+--       spike.handle_command(action, cmd.payload or {}, id)
+--     end)
+--     if not okSpike then
+--       print("[Cypher ERROR] ArcadeSpike: " .. tostring(errSpike))
+--     end
+--     return
+--   end

@@ -30,7 +30,7 @@ Track B (no game) B1 rules+dice+sim ─▶ B2 clock+intent+chatsim ─▶ B3 ove
 
 | Phase | Work | Est. days | Exit |
 |---|---|---|---|
-| P0 Reboot | [phase-0-reboot](phase-0-reboot.md): reinstall to D:, move the mod layer, redscript, smoke test with the old bridge, freeze the stack | 1 | `[Cypher] spawn complete` again on 2.31 |
+| P0 Reboot | [phase-0-reboot](phase-0-reboot.md): C: SSD install, redscript, smoke (`spawn complete`), freeze on D: | 1 | done 2026-10-11 |
 | A1 Spikes | S-01, S-02, S-03, S-05 (S-04 partially) | 6–9 | G1 |
 | A2 Stage integration | Port CypherAgent → ArcadeStage (`stage.v1`), camera rig, actors, beat player, reconciler, scout tool, first soundstage authored | 7–10 | G3 input |
 | B1 Rules core | `rules/`, `dice/` (commit, HMAC, verifier), `sim/` with bot policies, property tests, balance pass | 5–7 | sim meets targets in [ruleset](../design/ruleset.md) |

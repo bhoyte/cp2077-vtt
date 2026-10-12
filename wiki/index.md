@@ -33,11 +33,12 @@ Start at [now](now.md). Schema and operations: [AGENTS.md](../AGENTS.md). Timeli
 - [ADR-008](decisions/ADR-008-stack.md) — Python + TS + Lua; schemas as truth; FakeStage first-class
 - [ADR-009](decisions/ADR-009-llm-boundary.md) — no generative AI in the authoritative loop
 - [ADR-010](decisions/ADR-010-show-clock.md) — latency grace, early lock-in, pipelined slots
-- [ADR-011](decisions/ADR-011-install-and-pin.md) — install on D:, pin 2.31, freeze the mod layer
+- [ADR-011](decisions/ADR-011-install-and-pin.md) — superseded: had said install on D:
+- [ADR-012](decisions/ADR-012-install-path.md) — keep the game on the C: SSD; pin 2.31; freeze backups on D:
 
 ## Spikes
-- [S-01](spikes/S-01-camera-rig.md) — camera entities: cut, blend, hide V, streaming radius
-- [S-02](spikes/S-02-puppetry.md) — six actors, poses, freeze, weapons, no AI interference
+- [S-01](spikes/S-01-camera-rig.md) — partial: roof cameras switch and hold; HUD still draws; far park killed V
+- [S-02](spikes/S-02-puppetry.md) — puppetry; first roof slice posed and froze three actors, full soak not run
 - [S-03](spikes/S-03-staged-violence.md) — gunfire FX, hit reactions, death on command
 - [S-04](spikes/S-04-resilience.md) — reconnect, restage, crash failover, soak, unfocused rendering
 - [S-05](spikes/S-05-capture-and-perf.md) — OBS capture and performance budget on this PC

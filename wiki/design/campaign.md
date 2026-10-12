@@ -27,4 +27,4 @@ Characters (sheet, injuries, gear, history) · crew eddies · faction heat (risi
 Season 0 = 5 soundstages × reusable gig templates (variety comes from enemy mixes, directives, and lifepath hooks). Rules frozen per season ([ruleset](ruleset.md)).
 
 ## Soundstage shortlist (Season 0)
-Totentanz balcony (spec) · Afterlife back room · Badlands fuel depot (spec) · Kabuki alley (prior project) · a megabuilding corridor. Pick by S-05 performance and low ambient-crowd density.
+Totentanz balcony (spec) · Afterlife back room · Badlands fuel depot (spec) · Kabuki alley (prior project) · a megabuilding corridor. Phantom Liberty is installed (Q-04), so Dogtown interiors are candidates if S-05 likes them. Pick by performance and low ambient-crowd density.

@@ -92,3 +92,9 @@ likelihood: high
 impact: high
 mitigation: Hard gates in the roadmap, `now.md` discipline, a vertical slice before any content expansion.
 owner: plan/roadmap
+
+### R-15 — C: SSD fills up (51 GB free after the 91 GB install) and starves the pagefile or a Steam verify
+likelihood: medium
+impact: medium
+mitigation: Keep the live game on C: (ADR-012). Put stack zips, full-folder backups, and OBS recordings on D:. Set Steam to update-on-launch. Don't keep a second copy of the game on C:.
+owner: plan/phase-0-reboot

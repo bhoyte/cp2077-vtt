@@ -27,7 +27,7 @@ answer: Steam only; user can buy on GOG if absolutely necessary (2026-10-11). St
 ### Q-04 — Is Phantom Liberty owned (Dogtown sets, extra assets)?
 blocks: [design/campaign]
 default: Base-game locations only.
-answer:
+answer: Yes — Steam depot 2138330 (~25 GB) and `archive\pc\ep1` are on disk (F-020, 2026-10-11). Dogtown sets are in play for Season 0.
 
 ### Q-05 — Is the crew's handler voiced live by the streamer, or partly pre-recorded / TTS?
 blocks: [components/broadcast]
@@ -47,7 +47,7 @@ answer:
 ### Q-08 — Does AMM's Camera class respond when instantiated from another CET mod, or must we call through AMM's module table?
 blocks: [S-01]
 default: Try our own spawn of `simple_free_camera.ent` first; fall back to AMM's module.
-answer:
+answer: Own spawn is enough. ArcadeSpike called `exEntitySpawner.Spawn` directly and got three camera components in a loaded save (2026-10-11 22:16). `AMM.Camera` is a table on the mod, but it was not needed.
 
 ### Q-09 — Can CP2077 keep rendering at full rate while unfocused (operator working on a second monitor)?
 blocks: [S-04, S-05]
