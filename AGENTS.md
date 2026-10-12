@@ -15,11 +15,11 @@ Any decision may be overturned: write a superseding ADR that cites evidence. Nev
 | L0 | `wiki/now.md` | Current focus, active gate, next actions, blockers, last handoff | ≤ 80 lines. Rewrite, don't append. |
 | L1 | `wiki/index.md` | Catalog of every page with a one-line summary | One line per page |
 | L2 | `wiki/**/*.md` | Compiled knowledge: decisions, spikes, design, components, registers | Pages ≤ ~250 lines; split when larger |
-| L3 | `raw/**` | Immutable sources and evidence (user docs, prior-project snapshots, logs, web notes) | Never edited. Add new files only. |
+| L3 | `raw/**` | Immutable sources and evidence (user docs, prior-project snapshots, logs, web notes, Cursor chats) | Never edited. Add new files only. |
 | Log | `wiki/log.md` | Append-only timeline of operations | One entry per operation |
 
-Session start: read `wiki/now.md`, then the last ~5 entries of `wiki/log.md`, then pull pages from `wiki/index.md` as needed.
-Session end: run **handoff** (§4).
+Session start: read `wiki/now.md`, then the last ~5 entries of `wiki/log.md`, then the latest `raw/chats/*/session.md` if resuming after a gap, then pull pages from `wiki/index.md` as needed.
+Session end: run **handoff** (§4). On **close session**, also archive chats (§3).
 
 ## 2. Page types and frontmatter
 
@@ -63,6 +63,7 @@ Reference register entries by bare ID (`F-007`, `R-01`, `Q-03`) — lint resolve
 | **decide** | A choice with consequences | New ADR (or supersede one: set old `status: superseded`, link both ways) → update affected design/component pages → log. |
 | **lint** | Weekly, after big ingests, before handoff | `python tools/wiki.py lint` → fix errors → judge warnings → log. Also look for contradictions the tool can't see. |
 | **handoff** | End of every session | Rewrite `now.md` (focus, gate, next 3 actions, blockers, what just changed) → log entry → `python tools/wiki.py lint`. |
+| **close session** | User ends a dev stretch | **handoff** → copy all Cursor transcripts for this project into `raw/chats/YYYY-MM-DD-slug/` (parent `.jsonl`, subagents, compaction) → write `session.md` digest (user constraints, decisions, arc) → commit and push unless user said no commit. **Checkpoint** = same save without treating the session as ended. |
 | **playtest-ingest** | After any test stream | Session report → `raw/sessions/` → update design pages (pacing, balance, chat behaviour) and risks. |
 
 Log entry format (parseable): `## [YYYY-MM-DD] op | title` followed by short bullets of pages touched.

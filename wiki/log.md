@@ -94,3 +94,7 @@ Append-only. Format: `## [YYYY-MM-DD] op | title`. Newest at the bottom. `rg "^#
 ## [2026-10-12] handoff | session closed
 - now.md is the resume point. Three actors stack because the workspot samples position on the teleport tick.
 - Pushed to https://github.com/bhoyte/cp2077-vtt.
+
+## [2026-10-12] ingest | Cursor chat archive
+- raw/chats/2026-10-11_2026-10-12-s01-s02/: parent jsonl, two subagent threads, compaction, session.md digest.
+- AGENTS.md close-session now requires chat archival. Resume: read session.md after now.md.

@@ -20,4 +20,4 @@ updated: 2026-10-12
 - Pose runs on the same tick as teleport, so the ±1.2 m offsets never show up. `Util` is still unconfirmed from our mod. C: space still tight (R-15).
 
 ## Last handoff (2026-10-12)
-User is away. Roof is clear, overlay closed, first person. Frozen frame is three bodies stacked: gold hand through a tattooed palm, chrome forearm through a skin forearm. Evidence: raw/evidence/2026-10-12-s02-frozen.png plus the hands and arm crops. Player stayed at -1538.17, 1197.07, 57.00.
+User is away. Roof is clear, overlay closed, first person. Frozen frame is three bodies stacked: gold hand through a tattooed palm, chrome forearm through a skin forearm. Evidence: raw/evidence/2026-10-12-s02-frozen.png plus the hands and arm crops. Player stayed at -1538.17, 1197.07, 57.00. Full chat archive: raw/chats/2026-10-11_2026-10-12-s01-s02/ (read session.md first).

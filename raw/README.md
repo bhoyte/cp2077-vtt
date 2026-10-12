@@ -13,4 +13,6 @@ Never edit files here. Add new files only (use dated names). Summaries live in `
 | `web/cp2077-compat-2026-10-11.md` | Notes from the 2077mods compatibility matrix + CET releases | 2026-10-11 |
 | `env/host-audit-2026-10-11.md` | Agent's audit of this PC | 2026-10-11 |
 
-Future: `evidence/YYYY-MM-DD-*` (spike logs, screenshots, clips), `sessions/YYYY-MM-DD-*` (ledger-generated show reports).
+| `chats/YYYY-MM-DD-slug/` | Cursor agent transcripts (`.jsonl`), compaction segments, and `session.md` digest | 2026-10-12 |
+| `evidence/YYYY-MM-DD-*` | Spike logs, screenshots, clips | 2026-10-11+ |
+| `sessions/YYYY-MM-DD-*` | Ledger-generated show reports (future) | — |
