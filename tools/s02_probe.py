@@ -1,7 +1,7 @@
-"""S-02 first slice: three actors, one standing pose, freeze. V is not moved.
+"""S-02 separation: three actors in front of V, posed only after they land.
 
 Listens on 127.0.0.1:2077. Reload CypherAgent (and ArcadeSpike) from the CET
-overlay while this process is up. Captures the game window at 0,0.
+overlay while this process is up. Captures the game window. Does not despawn.
 """
 
 from __future__ import annotations
@@ -252,35 +252,13 @@ async def run() -> int:
             print("[s02] cast did not finish", flush=True)
             return 7
 
-        print("[s02] >>> cam_spawn", flush=True)
-        await send(writer, command(2, "cam_spawn", {}))
-        wide = False
-        deadline = time.monotonic() + 20
-        while time.monotonic() < deadline and not wide:
-            if not same():
-                return 6
-            for line in tail.drain():
-                if "RESULT spawned=cam_w" in line:
-                    wide = True
-                    break
-            await asyncio.sleep(0.25)
-        if not wide:
-            print("[s02] cam_w did not spawn", flush=True)
-            return 8
-        print("[s02] >>> cam_cut cam_w", flush=True)
-        await send(writer, command(3, "cam_cut", {"cam": "cam_w", "blend": 0}))
-        # Leave a beat so the overlay can be closed before the frame is saved.
-        await asyncio.sleep(8.0)
+        # Leave the cast in the world. Capture the player's own view.
+        await asyncio.sleep(1.5)
         tail.drain()
-        capture("2026-10-12-s02-wide2.png")
-        if same():
-            print("[s02] >>> cam_despawn + pup_clear", flush=True)
-            await send(writer, command(4, "cam_despawn", {}))
-            await send(writer, command(5, "pup_clear", {}))
-            end = time.monotonic() + 3
-            while time.monotonic() < end:
-                tail.drain()
-                await asyncio.sleep(0.2)
+        capture("2026-10-12-s02-aitp.png")
+        await asyncio.sleep(1.0)
+        capture("2026-10-12-s02-aitp-b.png")
+        print("[s02] cast left in place for inspection", flush=True)
         print(f"[s02] log lines {len(tail.hits)} player={state.get('player')}", flush=True)
         return 0
     finally:

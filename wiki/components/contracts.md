@@ -108,3 +108,27 @@ Rules layer (implemented, `arcade/rules/events.py`; folding them over the starti
 
 ## 6. Overlay state (orchestrator → overlay, WebSocket)
 Full snapshot on connect, then JSON-patch deltas: `{phase, slot, timer{ends_at_viewer, server_close_at}, options[], tally{}, party[], enemies[], initiative[], dice?, banners[], comms[], commit}`.
+
+## 7. Live session `table.v0` (ADR-013)
+
+What the socket speaks now. `stage.v1` above waits. One JSON object per line, `\n` or `\r\n`. Game is the client. `tools/booth.py` is the server on `127.0.0.1:2077`.
+
+`hello` (game → booth, on every attach):
+
+```json
+{"type":"hello","schema":"table.v0","mod":"ArcadeLink","version":"0.1.0","player":{"x":0,"y":0,"z":0,"facing_x":0,"facing_y":0},"actors":[]}
+```
+
+`player` is null when no pawn is loaded. `actors` is empty in this cut.
+
+`status` (booth → game), then the same shape back with the request id:
+
+```json
+{"type":"status","id":"b1"}
+```
+
+```json
+{"type":"status","id":"b1","schema":"table.v0","mod":"ArcadeLink","version":"0.1.0","player":{"x":0,"y":0,"z":0,"facing_x":0,"facing_y":0},"actors":[]}
+```
+
+`python tools/booth.py status` sends the request through the local control port `127.0.0.1:2078` and prints the reply.

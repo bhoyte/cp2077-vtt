@@ -28,15 +28,16 @@ local POSE = {
   comp = "amm_workspot_base",
 }
 
--- Small offsets in front of V. Actors move; V does not.
+-- Marks in front of V. Actors move; V does not. Lateral gap is wide enough
+-- that a talk gesture cannot put one body inside another.
 local CAST = {
-  { id = "johnny", name = "Johnny Silverhand", rig = "Man Average", fwd = 2.2, right = -1.2 },
-  { id = "hanako", name = "Hanako", rig = "Woman Average", fwd = 2.4, right = 0.0 },
-  { id = "song", name = "Song So Ri", rig = "Woman Average", fwd = 2.2, right = 1.2 },
+  { id = "johnny", name = "Johnny Silverhand", rig = "Man Average", fwd = 2.6, right = -1.6 },
+  { id = "hanako", name = "Hanako", rig = "Woman Average", fwd = 2.8, right = 0.0 },
+  { id = "song", name = "Song So Ri", rig = "Woman Average", fwd = 2.6, right = 1.6 },
 }
 
 local ArcadeSpike = {
-  version = "s02-cast",
+  version = "s02-aitp",
   actors = {},
   spawning = false,
   pendingCut = nil,
@@ -628,6 +629,15 @@ local function flatRight(fwd)
   return -fwd.y / len, fwd.x / len
 end
 
+local function distXY(a, b)
+  if a == nil or b == nil then
+    return 999
+  end
+  local dx = a.x - b.x
+  local dy = a.y - b.y
+  return math.sqrt(dx * dx + dy * dy)
+end
+
 function ArcadeSpike.clear_cast()
   for id, actor in pairs(ArcadeSpike.actors) do
     pcall(function()
@@ -679,6 +689,11 @@ local function poseAndHold(actor)
     comp = POSE.comp,
     rig = actor.rig,
   }
+  local here = nil
+  pcall(function()
+    here = actor.entity:GetWorldPosition()
+  end)
+  result("pup_pose_at", actor.id .. " " .. formatPos(here))
   local okP, errP = pcall(function()
     AMM.Poses:PlayAnimationOnTarget(target, anim, true)
   end)
@@ -694,7 +709,11 @@ local function poseAndHold(actor)
     local okF, errF = pcall(function()
       AMM.Tools:FreezeNPC(actor.entity, true)
     end)
-    result("pup_frozen", actor.id .. " " .. (okF and "ok" or tostring(errF)))
+    local frozenAt = nil
+    pcall(function()
+      frozenAt = actor.entity:GetWorldPosition()
+    end)
+    result("pup_frozen", actor.id .. " " .. (okF and "ok" or tostring(errF)) .. " at=" .. formatPos(frozenAt))
     actor.frozen = okF
     actor.settled = true
     local pending = false
@@ -738,15 +757,68 @@ local function placeActor(spec, spawnObj)
       if actor ~= nil then
         actor.entity = entity
       end
-      local okTp, errTp = pcall(function()
-        Game.GetTeleportationFacility():Teleport(
-          entity,
-          spawnPos,
-          EulerAngles.new(rot.roll, rot.pitch, rot.yaw - 180)
-        )
+      local yaw = rot.yaw - 180
+      pcall(function()
+        entity:GetAIControllerComponent():DisableCollider()
       end)
-      result("pup_placed", spec.id .. " " .. (okTp and "ok" or tostring(errTp)))
-      poseAndHold(actor)
+      -- Facility Teleport returned ok and did not move these puppets.
+      -- AMM moves NPCs with AITeleportCommand.
+      local function doTeleport()
+        local AMM = GetMod("AppearanceMenuMod")
+        if AMM == nil or AMM.Tools == nil or type(AMM.Tools.TeleportNPCTo) ~= "function" then
+          return false, "no-teleport-npc"
+        end
+        return pcall(function()
+          AMM.Tools:TeleportNPCTo(entity, spawnPos, yaw)
+        end)
+      end
+      local okTp, errTp = doTeleport()
+      result("pup_placed", spec.id .. " " .. (okTp and "ok" or tostring(errTp)) .. " want=" .. formatPos(spawnPos))
+      -- PlayAnimationOnTarget spawns the workspot at GetWorldPosition on the
+      -- call tick. Wait until the teleport has actually landed, twice, first.
+      local polls = 0
+      local held = 0
+      Cron.Every(0.2, function(settle)
+        polls = polls + 1
+        local here = nil
+        pcall(function()
+          here = entity:GetWorldPosition()
+        end)
+        local d = distXY(here, spawnPos)
+        result("pup_pos", spec.id .. " t=" .. tostring(polls) .. " d=" .. string.format("%.2f", d) .. " at=" .. formatPos(here))
+        if d <= 0.35 then
+          held = held + 1
+        else
+          held = 0
+          if polls % 2 == 0 then
+            doTeleport()
+          end
+        end
+        if held >= 2 then
+          result("pup_settled", spec.id .. " held=" .. tostring(held) .. " d=" .. string.format("%.2f", d))
+          pcall(function()
+            entity:GetAIControllerComponent():EnableCollider()
+          end)
+          Cron.Halt(settle)
+          poseAndHold(actor)
+        elseif polls >= 12 then
+          result("pup_unmoved", spec.id .. " d=" .. string.format("%.2f", d) .. " at=" .. formatPos(here))
+          Cron.Halt(settle)
+          if actor ~= nil then
+            actor.settled = true
+          end
+          local pending = false
+          for _, other in pairs(ArcadeSpike.actors) do
+            if not other.settled then
+              pending = true
+            end
+          end
+          if not pending then
+            result("pup_player_end", formatPos(playerPos()))
+            result("pup_cast", "done")
+          end
+        end
+      end)
       Cron.Halt(timer)
     elseif attempts > 40 then
       result("pup_place_err", spec.id .. " unresolved")
@@ -769,10 +841,53 @@ local function placeActor(spec, spawnObj)
   end)
 end
 
+local function sweepStacked()
+  local player = playerOrNil()
+  if player == nil then
+    result("pup_sweep", "no-player")
+    return
+  end
+  local n = 0
+  local ok, err = pcall(function()
+    local searchQuery = Game["TSQ_NPC;"]()
+    searchQuery.maxDistance = 5
+    local success, parts = Game.GetTargetingSystem():GetTargetParts(player, searchQuery)
+    if not success or parts == nil then
+      return
+    end
+    local playerHash = tostring(player:GetEntityID().hash)
+    for _, part in ipairs(parts) do
+      local entity = part:GetComponent(part):GetEntity()
+      if entity ~= nil and entity:IsNPC() and tostring(entity:GetEntityID().hash) ~= playerHash then
+        pcall(function()
+          TimeDilationHelper.UnsetIndividualTimeDilation(entity)
+        end)
+        pcall(function()
+          Game.GetWorkspotSystem():StopInDevice(entity)
+        end)
+        pcall(function()
+          entity:Dispose()
+        end)
+        pcall(function()
+          getEntitySystem():DeleteEntity(entity:GetEntityID())
+        end)
+        n = n + 1
+        result("pup_swept", formatPos(entity:GetWorldPosition()))
+      end
+    end
+  end)
+  if not ok then
+    result("pup_sweep_err", tostring(err))
+  end
+  result("pup_sweep", tostring(n))
+end
+
 function ArcadeSpike.cast()
   local startPos = playerPos()
   result("pup_player_start", formatPos(startPos))
   ArcadeSpike.clear_cast()
+  sweepStacked()
+  Cron.After(0.4, function()
   local AMM = GetMod("AppearanceMenuMod")
   if AMM == nil or AMM.Spawn == nil then
     result("pup_cast", "no-amm")
@@ -819,6 +934,7 @@ function ArcadeSpike.cast()
       end
     end
   end
+  end)
 end
 
 function ArcadeSpike.handle_command(action, payload, id)

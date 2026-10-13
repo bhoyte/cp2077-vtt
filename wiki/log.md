@@ -98,3 +98,30 @@ Append-only. Format: `## [YYYY-MM-DD] op | title`. Newest at the bottom. `rg "^#
 ## [2026-10-12] ingest | Cursor chat archive
 - raw/chats/2026-10-11_2026-10-12-s01-s02/: parent jsonl, two subagent threads, compaction, session.md digest.
 - AGENTS.md close-session now requires chat archival. Resume: read session.md after now.md.
+
+## [2026-10-12] spike-report | S-02 teleport did not separate the cast
+- `Teleport` ok, position unchanged for 2.4 s. All three stayed at the shared 1 m spawn. Cast left in place.
+- Frames: raw/evidence/2026-10-12-s02-separated.png, separated-b.png. Evidence: raw/evidence/2026-10-12-s02-separate.md.
+- F-008 note, F-027 note, S-02 result, now.md.
+
+## [2026-10-12] spike-report | S-02 NPC teleport separated the cast
+- `Tools:TeleportNPCTo` put Johnny, Hanako, and Song So Ri on three marks. Freeze kept the coordinates. V unmoved. Cast left in place.
+- Frames: raw/evidence/2026-10-12-s02-aitp.png. Evidence: raw/evidence/2026-10-12-s02-aitp.md. F-028 verified.
+
+## [2026-10-12] decide | operated table, session is the first tool
+- ADR-013. Overview, ADR-002, contracts `table.v0`, glossary, S-04 note, index.
+- ArcadeLink redials and answers status. tools/booth.py holds port 2077. CypherAgent no longer dials.
+- Roof cast not touched. One CET reload still required to load the mod.
+
+## [2026-10-13] spike-report | session redials without a CET reload
+- ArcadeLink 0.1.2. Booth killed. `link down quiet=3.4` then hello 8 s later. No reload between them.
+- `status` returned V at -1536.78, 1195.77, 57.00. Actors empty. Roof cast not commanded.
+- F-029 verified. F-002 note updated. Evidence: raw/evidence/2026-10-13-session-redial.md.
+
+## [2026-10-13] handoff | session closed
+- now.md is the resume point. Next table command is `place` via TeleportNPCTo. Do not teleport V. Do not reload to send a command.
+- Chat archive: raw/chats/2026-10-12_2026-10-13-bridge/.
+
+## [2026-10-13] ingest | Cursor chat archive
+- raw/chats/2026-10-12_2026-10-13-bridge/: parent jsonl, session.md digest. No subagent threads.
+- Resume: read session.md after now.md.

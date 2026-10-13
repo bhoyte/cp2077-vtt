@@ -24,7 +24,7 @@ note: JSON lines, `\r\n` delimiter, game is TCP client, Python is server on 127.
 status: verified
 scope: cp2077-2.31 / cet-1.37.1 / red4ext-1.30.0 / codeware-1.19.0 / archivexl-1.26.3 / amm-2.12.5 / redsocket-0.5.0
 evidence: raw/night-city-live/HANDOFF-2026-06.md; raw/env/host-audit-2026-10-11.md (log: "RedSocket connection failed" when bridge absent)
-note: A failed first Connect does not retry. Reloading CypherAgent from the CET overlay while the bridge is listening does connect (2026-10-11). Destroy/recreate + backoff still S-04.
+note: A failed first Connect does not retry by itself. Reloading CypherAgent while a server is listening does connect (2026-10-11). `IsConnected` stayed true after the peer died (2026-10-13 00:00). ArcadeLink's redial is F-029.
 
 ### F-003 — In CET, `require("json")` is unreliable; bundle rxi/json as `cypher_json.lua`; `Cron.lua` must sit at mod root
 status: verified
@@ -66,6 +66,7 @@ note: Activation also calls `Util:AddPlayerEffects()` + `Tools:ToggleHead()` (hi
 status: source-read
 scope: cp2077-2.31 / cet-1.37.1 / red4ext-1.30.0 / codeware-1.19.0 / archivexl-1.26.3 / amm-2.12.5 / redsocket-0.5.0
 evidence: raw/amm/camera.lua (Camera:Move); raw/night-city-live/03-CET-MOD-REFERENCE.md; raw/evidence/2026-10-11-s01-camera.md (player only: park 5/30/80/150 m returned ok)
+note: On 2026-10-12 the same call returned ok on three fresh AMM puppets and did not move them. They stayed at the shared spawn point for 2.4 s of retries (raw/evidence/2026-10-12-s02-separate.md). NPC placement that did move them is F-028.
 
 ### F-012 — AMM's DB holds 4,363 entities (incl. 103 "FX & Effects", 37 weapons), 30,069 appearances, 43,765 workspots, 142 photo-mode poses, 121 locations
 status: source-read
@@ -165,11 +166,23 @@ scope: cp2077-2.31 / cet-1.37.1 / red4ext-1.30.0 / codeware-1.19.0 / archivexl-1
 evidence: raw/evidence/2026-10-11-s01-camera.md (RED4ext 21:59:40, `inGameConfigGroup.cpp:76`)
 note: `pcall` does not catch it. There is no safe HUD-off call yet; S-01 checks the HUD by eye.
 
+### F-028 — `AMM.Tools:TeleportNPCTo` places a fresh AMM puppet on a world mark
+status: verified
+scope: cp2077-2.31 / cet-1.37.1 / red4ext-1.30.0 / codeware-1.19.0 / archivexl-1.26.3 / amm-2.12.5 / redsocket-0.5.0
+evidence: raw/evidence/2026-10-12-s02-aitp.md
+note: `AITeleportCommand` with `doNavTest = false`. Johnny, Hanako, and Song So Ri each reported distance 0.00 to a different mark, then held that position through pose and freeze. V stayed at -1536.78, 1195.77, 57.00. The facility teleport in F-008 did not do this.
+
+### F-029 — ArcadeLink redials the booth after the pings stop, without a CET reload
+status: verified
+scope: cp2077-2.31 / cet-1.37.1 / red4ext-1.30.0 / codeware-1.19.0 / archivexl-1.26.3 / amm-2.12.5 / redsocket-0.5.0
+evidence: raw/evidence/2026-10-13-session-redial.md
+note: Version 0.1.2. Booth sends a ping each second. After the booth process was killed, the log showed `link down quiet=3.4` at 02:23:59 and `connected` plus hello at 02:24:07. No reload between them. `status` returned player -1536.78, 1195.77, 57.00. Actors empty. The roof cast was not commanded.
+
 ### F-027 — Three AMM characters can be posed and frozen beside V without moving V
 status: verified
 scope: cp2077-2.31 / cet-1.37.1 / red4ext-1.30.0 / codeware-1.19.0 / archivexl-1.26.3 / amm-2.12.5 / redsocket-0.5.0
 evidence: raw/evidence/2026-10-12-s02-roof-cast.md
-note: Johnny Silverhand, Hanako, Song So Ri. Clip `stand__2h_on_hip__01__talk__neutral__01`, then FreezeNPC and SetNPCAttitude friendly. Player stayed at -1538.17, 1197.07, 57.00. The three meshes occupy one volume (gold hand through a tattooed palm; chrome forearm through a skin forearm). Lateral offsets did not separate them.
+note: First passes stacked them at AMM's shared 1 m spawn (raw/evidence/2026-10-12-s02-separate.md). 21:54 pass with `Tools:TeleportNPCTo` put them on three marks and the freeze kept those coordinates (raw/evidence/2026-10-12-s02-aitp.md). Player unmoved.
 
 ### F-024 — An activated `simple_free_camera.ent` replaces the player view and holds a distinct angle; the game HUD stays drawn on top
 status: verified

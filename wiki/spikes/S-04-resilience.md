@@ -4,11 +4,13 @@ id: S-04
 title: Resilience — reconnect in any order, restage, crash failover, 60-minute soak, unfocused rendering
 status: planned
 gate: G3
-updated: 2026-10-11
+updated: 2026-10-12
 depends_on: [F-002, F-010, F-011]
 ---
 
 # S-04 — Resilience
+
+**Note (2026-10-12).** The reconnect loop is the operated-table session ([ADR-013](../decisions/ADR-013-operated-table.md)), not a late patch on CypherAgent. Steps 2–5 below stay in this spike.
 
 **Procedure.**
 1. Start the game first, then the orchestrator 60 s later: does the CET backoff loop connect? (Tests whether a failed RedSocket can `Connect()` again; otherwise destroy/recreate the socket.)

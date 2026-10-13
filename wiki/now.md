@@ -2,22 +2,22 @@
 type: hub
 title: Now — current focus and handoff
 status: active
-updated: 2026-10-12
+updated: 2026-10-13
 ---
 
 # Now
 
-**Focus:** S-02 first slice spawned three actors on the roof and froze them. They stacked in one volume. V did not move.
+**Focus:** The session redials. ArcadeLink 0.1.2 came back by itself after the booth was killed. `status` still returns V's position. The roof cast was not touched.
 **Active gates:** G1 First Light (Track A), G2 Ghost Cabinet (Track B). See [roadmap](plan/roadmap.md).
-**Orientation:** [overview](overview.md) · [glossary](glossary.md) · how this wiki works: [AGENTS.md](../AGENTS.md), [src-karpathy-wiki](sources/src-karpathy-wiki.md).
+**Orientation:** [overview](overview.md) · [glossary](glossary.md) · [ADR-013](decisions/ADR-013-operated-table.md).
 
 ## Next actions
-1. Separate the three actors before the workspot samples their position. Do not teleport V. Confirm with a close crop of hands and arms, not a wide guess.
-2. Then frame them from a camera that stays on the roof.
-3. B2 still needs the Twitch adapter and the ledger. Leave streaming, far teleports, weapons, and the in-game HUD for later.
+1. Leave Johnny, Hanako, and Song So Ri on the roof until the next table command exists.
+2. Add `place` on this session. The reply includes measured positions. Use `Tools:TeleportNPCTo` (F-028). Do not teleport V.
+3. Booth stays up. Do not reload CET to send a command.
 
 ## Blockers
-- Pose runs on the same tick as teleport, so the ±1.2 m offsets never show up. `Util` is still unconfirmed from our mod. C: space still tight (R-15).
+- The actor list in `status` is still empty. This session does not yet know the three bodies on the roof. C: space still tight (R-15).
 
-## Last handoff (2026-10-12)
-User is away. Roof is clear, overlay closed, first person. Frozen frame is three bodies stacked: gold hand through a tattooed palm, chrome forearm through a skin forearm. Evidence: raw/evidence/2026-10-12-s02-frozen.png plus the hands and arm crops. Player stayed at -1538.17, 1197.07, 57.00. Full chat archive: raw/chats/2026-10-11_2026-10-12-s01-s02/ (read session.md first).
+## Last handoff (2026-10-13)
+Session closed. Redial verified: `link down quiet=3.4` at 02:23:59, hello again at 02:24:07, no reload between them. V at -1536.78, 1195.77, 57.00. The three were left on the roof; this session does not track them. Chat archive: raw/chats/2026-10-12_2026-10-13-bridge/ (read session.md first).
