@@ -1,9 +1,11 @@
-"""Booth: hold 127.0.0.1:2077 for the ArcadeLink session.
+"""Keep a connection open for the game on 127.0.0.1:2077.
 
-Stays up. Prints each hello. Does not cast, pose, or decide a show.
+Stays up. Prints each hello. Asks the game where V is, or to place named people in front of her.
 
     python tools/booth.py
     python tools/booth.py status
+    python tools/booth.py place "Johnny Silverhand"
+    python tools/booth.py place "Johnny Silverhand" "Hanako" "Song So Ri"
 """
 
 from __future__ import annotations
@@ -30,7 +32,7 @@ class Booth:
             if not fut.done():
                 fut.set_result({"error": reason})
 
-    async def request_status(self) -> dict:
+    async def request(self, kind: str, timeout: float, extra: dict | None = None) -> dict:
         writer = self.game_writer
         if writer is None:
             return {"error": "no-game"}
@@ -39,7 +41,10 @@ class Booth:
         loop = asyncio.get_running_loop()
         fut: asyncio.Future = loop.create_future()
         self.pending[req_id] = fut
-        payload = json.dumps({"type": "status", "id": req_id}, separators=(",", ":")) + "\r\n"
+        body = {"type": kind, "id": req_id}
+        if extra:
+            body.update(extra)
+        payload = json.dumps(body, separators=(",", ":")) + "\r\n"
         writer.write(payload.encode("utf-8"))
         try:
             await writer.drain()
@@ -48,7 +53,7 @@ class Booth:
             self.game_writer = None
             return {"error": "no-game"}
         try:
-            return await asyncio.wait_for(fut, timeout=3)
+            return await asyncio.wait_for(fut, timeout=timeout)
         except asyncio.TimeoutError:
             self.pending.pop(req_id, None)
             return {"error": "timeout"}
@@ -60,7 +65,7 @@ class Booth:
         if kind == "hello":
             print("[booth] hello " + json.dumps(message, separators=(",", ":")), flush=True)
             return
-        if kind == "status":
+        if kind in ("status", "place"):
             fut = self.pending.pop(str(message.get("id")), None)
             if fut is not None and not fut.done():
                 fut.set_result(message)
@@ -87,6 +92,39 @@ async def read_game(booth: Booth, reader: asyncio.StreamReader) -> None:
                 continue
             if isinstance(message, dict):
                 booth.on_game_message(message)
+
+
+def names_from_args(args: list[str]) -> list[str]:
+    names: list[str] = []
+    for arg in args:
+        for part in arg.split(","):
+            part = part.strip()
+            if part:
+                names.append(part)
+    return names
+
+
+def parse_control(line: bytes) -> tuple[str, dict | None, float]:
+    text = line.strip().decode("utf-8", errors="replace")
+    if text == "status":
+        return "status", None, 3
+    if text.startswith("{"):
+        try:
+            msg = json.loads(text)
+        except json.JSONDecodeError:
+            return "", None, 3
+        if isinstance(msg, dict) and msg.get("cmd") == "status":
+            return "status", None, 3
+        if isinstance(msg, dict) and msg.get("cmd") == "place":
+            raw = msg.get("names") or []
+            if isinstance(raw, str):
+                names = names_from_args([raw])
+            elif isinstance(raw, list):
+                names = names_from_args([str(item) for item in raw])
+            else:
+                names = []
+            return "place", {"names": names}, min(90, 8 + 6 * max(len(names), 1))
+    return "", None, 3
 
 
 async def serve() -> None:
@@ -120,10 +158,11 @@ async def serve() -> None:
         except asyncio.TimeoutError:
             line = b""
         reply: dict
-        if line.strip() == b"status":
-            reply = await booth.request_status()
-        else:
+        cmd, extra, timeout = parse_control(line)
+        if cmd == "":
             reply = {"error": "unknown"}
+        else:
+            reply = await booth.request(cmd, timeout, extra or None)
         writer.write((json.dumps(reply, separators=(",", ":")) + "\n").encode("utf-8"))
         try:
             await writer.drain()
@@ -154,25 +193,35 @@ async def serve() -> None:
         await asyncio.Future()
 
 
-async def ask_status() -> int:
+async def ask(kind: str, names: list[str] | None = None) -> int:
     try:
         reader, writer = await asyncio.open_connection(HOST, CTL_PORT)
     except OSError as exc:
-        print(f"[booth] status failed: {exc}", flush=True)
+        print(f"[booth] {kind} failed: {exc}", flush=True)
         return 1
-    writer.write(b"status\n")
+    if kind == "place":
+        payload = json.dumps({"cmd": "place", "names": names or []}, separators=(",", ":")) + "\n"
+    else:
+        payload = "status\n"
+    writer.write(payload.encode("utf-8"))
     await writer.drain()
     line = await reader.readline()
     writer.close()
     await writer.wait_closed()
     text = line.decode("utf-8", errors="replace").strip()
     print(text, flush=True)
-    return 0 if text and '"error"' not in text else 2
+    try:
+        message = json.loads(text) if text else {}
+    except json.JSONDecodeError:
+        return 2
+    return 0 if message.get("type") in ("status", "place") else 2
 
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "status":
-        sys.exit(asyncio.run(ask_status()))
+        sys.exit(asyncio.run(ask("status")))
+    if len(sys.argv) > 1 and sys.argv[1] == "place":
+        sys.exit(asyncio.run(ask("place", names_from_args(sys.argv[2:]))))
     try:
         asyncio.run(serve())
     except KeyboardInterrupt:

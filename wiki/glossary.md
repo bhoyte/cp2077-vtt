@@ -2,7 +2,7 @@
 type: hub
 title: Glossary
 status: active
-updated: 2026-10-12
+updated: 2026-10-13
 ---
 
 # Glossary
@@ -25,5 +25,5 @@ updated: 2026-10-12
 - **Flatlining** — 0 HP; death saves each turn until stabilized or dead.
 - **Spike / Glitch** — exploding natural 10 / natural 1 on a check.
 - **Gate (G1–G4)** — roadmap checkpoints: First Light, Ghost Cabinet, Vertical Slice, Launch.
-- **Session** — the live attach between the game and the booth. The game redials; a hello and a `status` reply carry the measured positions.
-- **Booth** — the process that holds `127.0.0.1:2077` for the session (`tools/booth.py`). It does not run the show.
+- **Session** — the live connection between the game and the program that listens for it. The game redials. `status` says where V is. `place` puts named people from the character list in front of her.
+- **Booth** — the program that stays running and listens on `127.0.0.1:2077` (`tools/booth.py`). It does not run the show. In conversation, say what it does: it keeps the connection to the game.

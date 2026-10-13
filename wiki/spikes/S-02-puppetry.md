@@ -4,7 +4,7 @@ id: S-02
 title: Puppetry — 6 actors at nodes, poses, freeze, expressions, weapons, no AI interference
 status: partial
 gate: G1
-updated: 2026-10-12
+updated: 2026-10-13
 depends_on: [F-004, F-005, F-008, F-012, F-013, F-025, F-026]
 ---
 
@@ -77,4 +77,6 @@ Separation pass (20:19, same roof, cast left in place). `Teleport` returned ok, 
 
 NPC-command pass (21:54). `Tools:TeleportNPCTo` put each puppet on a different mark (distance 0.00, held through freeze). [2026-10-12-s02-aitp.png](../../raw/evidence/2026-10-12-s02-aitp.png) shows three separate bodies in front of V. A 5 m sweep had cleared 15 leftovers at the old stack point. Weapons, expressions, look-at, and the 10-minute soak have not run.
 
-Evidence: [2026-10-12-s02-roof-cast.md](../../raw/evidence/2026-10-12-s02-roof-cast.md), [2026-10-12-s02-separate.md](../../raw/evidence/2026-10-12-s02-separate.md), [2026-10-12-s02-aitp.md](../../raw/evidence/2026-10-12-s02-aitp.md).
+Named place (2026-10-13 09:59), through the session rather than the probe. One command named Johnny Silverhand, Hanako, and Song So Ri. The reply put them about 1.6 m apart. [2026-10-13-place-names.png](../../raw/evidence/2026-10-13-place-names.png) shows three separate bodies, Hanako centered. They were not posed or frozen. Weapons, expressions, look-at, and the 10-minute soak have not run.
+
+Evidence: [2026-10-12-s02-roof-cast.md](../../raw/evidence/2026-10-12-s02-roof-cast.md), [2026-10-12-s02-separate.md](../../raw/evidence/2026-10-12-s02-separate.md), [2026-10-12-s02-aitp.md](../../raw/evidence/2026-10-12-s02-aitp.md), [2026-10-13-place-names.md](../../raw/evidence/2026-10-13-place-names.md).

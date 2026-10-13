@@ -2,7 +2,7 @@
 type: hub
 title: Index — every page, one line each
 status: active
-updated: 2026-10-12
+updated: 2026-10-13
 ---
 
 # Index
@@ -35,7 +35,7 @@ Start at [now](now.md). Schema and operations: [AGENTS.md](../AGENTS.md). Timeli
 - [ADR-010](decisions/ADR-010-show-clock.md) — latency grace, early lock-in, pipelined slots
 - [ADR-011](decisions/ADR-011-install-and-pin.md) — superseded: had said install on D:
 - [ADR-012](decisions/ADR-012-install-path.md) — keep the game on the C: SSD; pin 2.31; freeze backups on D:
-- [ADR-013](decisions/ADR-013-operated-table.md) — operated table; the session redials and answers status
+- [ADR-013](decisions/ADR-013-operated-table.md) — operated table; the session redials, answers status, and places the three again
 
 ## Spikes
 - [S-01](spikes/S-01-camera-rig.md) — partial: roof cameras switch and hold; HUD still draws; far park killed V

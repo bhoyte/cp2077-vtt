@@ -125,3 +125,26 @@ Append-only. Format: `## [YYYY-MM-DD] op | title`. Newest at the bottom. `rg "^#
 ## [2026-10-13] ingest | Cursor chat archive
 - raw/chats/2026-10-12_2026-10-13-bridge/: parent jsonl, session.md digest. No subagent threads.
 - Resume: read session.md after now.md.
+
+## [2026-10-13] decide | place spawns the three again
+- The cast is disposable. `place` removes people within 5 m, spawns Johnny, Hanako, and Song So Ri in front of V, and replies with measured positions. It does not move V.
+- ArcadeLink 0.1.3. tools/booth.py place. Contract table.v0, ADR-013, overview, glossary, now.md.
+- The running game still needs one mod reload before this command exists.
+
+## [2026-10-13] decide | place takes character names
+- One name places that person. Several names place that line, in order. People not named stay. A person already spawned is moved, not copied.
+- ArcadeLink 0.1.4. Ambiguous names return up to five list spellings. Contract table.v0, ADR-013, overview, glossary, now.md.
+- Supersedes the fixed trio in the entry above. The running game still needs one mod reload.
+
+## [2026-10-13] spike-report | named place, three in a line
+- Mods reloaded. ArcadeLink 0.1.4 hello, then place Johnny Silverhand, Hanako, Song So Ri.
+- Each move returned ok. Neighbors about 1.6 m apart, same height as V. V stayed at -1536.78, 1195.77, 57.00.
+- User frame shows three separate bodies. F-030 verified. Evidence: raw/evidence/2026-10-13-place-names.md.
+
+## [2026-10-13] handoff | session closed
+- now.md is the resume point. Spawning is the next exploration. The lineup on the roof is disposable.
+- Chat archive: raw/chats/2026-10-13-named-place/.
+
+## [2026-10-13] ingest | Cursor chat archive
+- raw/chats/2026-10-13-named-place/: parent jsonl, session.md digest. No subagent threads.
+- Resume: read session.md after now.md.

@@ -7,17 +7,17 @@ updated: 2026-10-13
 
 # Now
 
-**Focus:** The session redials. ArcadeLink 0.1.2 came back by itself after the booth was killed. `status` still returns V's position. The roof cast was not touched.
+**Focus:** Spawning is the next thing to learn. Named `place` works, and the roof picture shows Johnny, Hanako, and Song So Ri standing apart. The broadcast will depend on putting people in the world on purpose.
 **Active gates:** G1 First Light (Track A), G2 Ghost Cabinet (Track B). See [roadmap](plan/roadmap.md).
 **Orientation:** [overview](overview.md) · [glossary](glossary.md) · [ADR-013](decisions/ADR-013-operated-table.md).
 
 ## Next actions
-1. Leave Johnny, Hanako, and Song So Ri on the roof until the next table command exists.
-2. Add `place` on this session. The reply includes measured positions. Use `Tools:TeleportNPCTo` (F-028). Do not teleport V.
-3. Booth stays up. Do not reload CET to send a command.
+1. Explore spawning: one name, several names, placing someone who is already there, and what the reply tells the operator.
+2. Treat the current lineup as disposable. Spawn again whenever the world does not match.
+3. Leave pose and freeze until spawning is comfortable.
 
 ## Blockers
-- The actor list in `status` is still empty. This session does not yet know the three bodies on the roof. C: space still tight (R-15).
+- None on the cast. C: space still tight (R-15).
 
 ## Last handoff (2026-10-13)
-Session closed. Redial verified: `link down quiet=3.4` at 02:23:59, hello again at 02:24:07, no reload between them. V at -1536.78, 1195.77, 57.00. The three were left on the roof; this session does not track them. Chat archive: raw/chats/2026-10-12_2026-10-13-bridge/ (read session.md first).
+Session closed. ArcadeLink 0.1.4. Place by name put the three in a line. The user frame shows them separate. V stayed at -1536.78, 1195.77, 57.00. Chat archive: raw/chats/2026-10-13-named-place/ (read session.md first).

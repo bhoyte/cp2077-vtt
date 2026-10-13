@@ -2,7 +2,7 @@
 type: register
 title: Facts register — engine, mods, vendors, host
 status: active
-updated: 2026-10-12
+updated: 2026-10-13
 stack: cp2077-2.31 / cet-1.37.1 / red4ext-1.30.0 / codeware-1.19.0 / archivexl-1.26.3 / amm-2.12.5 / redsocket-0.5.0
 ---
 
@@ -183,6 +183,12 @@ status: verified
 scope: cp2077-2.31 / cet-1.37.1 / red4ext-1.30.0 / codeware-1.19.0 / archivexl-1.26.3 / amm-2.12.5 / redsocket-0.5.0
 evidence: raw/evidence/2026-10-12-s02-roof-cast.md
 note: First passes stacked them at AMM's shared 1 m spawn (raw/evidence/2026-10-12-s02-separate.md). 21:54 pass with `Tools:TeleportNPCTo` put them on three marks and the freeze kept those coordinates (raw/evidence/2026-10-12-s02-aitp.md). Player unmoved.
+
+### F-030 — ArcadeLink `place` with character-list names puts those people in a line in front of V
+status: verified
+scope: cp2077-2.31 / cet-1.37.1 / red4ext-1.30.0 / codeware-1.19.0 / archivexl-1.26.3 / amm-2.12.5 / redsocket-0.5.0
+evidence: raw/evidence/2026-10-13-place-names.md
+note: Version 0.1.4. One command named Johnny Silverhand, Hanako, and Song So Ri. Reply positions were about 1.6 m apart at z 57. V stayed at -1536.78, 1195.77, 57.00. The user frame shows three separate bodies. They were not posed or frozen.
 
 ### F-024 — An activated `simple_free_camera.ent` replaces the player view and holds a distinct angle; the game HUD stays drawn on top
 status: verified

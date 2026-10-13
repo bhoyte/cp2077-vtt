@@ -2,7 +2,7 @@
 type: hub
 title: Overview — Night City Arcade
 status: active
-updated: 2026-10-12
+updated: 2026-10-13
 depends_on: [F-001, F-004, F-007]
 ---
 
@@ -15,7 +15,7 @@ Death is permanent. The streamer is off-camera: the operator, and the diegetic v
 
 Source vision: [user spec](../raw/user/system-specification.v1.md), [core philosophy](../raw/user/core-philosophy.v1.md) — summarized and critiqued in [sources/src-user-vision](sources/src-user-vision.md).
 
-**Operating model ([ADR-013](decisions/ADR-013-operated-table.md)).** An operator runs the table. The operator may be a person or an agent with tools. The first tool is the session: the game keeps the pieces, redials `127.0.0.1:2077`, and answers `status` with the measured player position. Rules and dice stay deterministic. Twitch, OBS, beat timelines, and the self-healing reconciler wait until that session holds.
+**Operating model ([ADR-013](decisions/ADR-013-operated-table.md)).** An operator runs the table. The operator may be a person or an agent with tools. The first tool is the session: the game redials `127.0.0.1:2077`, answers `status` with the measured player position, and `place` puts named people in front of V. Last time's bodies are not required. Rules and dice stay deterministic. Twitch, OBS, beat timelines, and the self-healing reconciler wait until that session holds.
 
 ## The five reframes (what changed from the original spec)
 

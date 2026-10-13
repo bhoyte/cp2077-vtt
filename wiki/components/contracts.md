@@ -2,7 +2,7 @@
 type: component
 title: Contracts — scene manifest v2, StageSpec, beats, wire protocol stage.v1, events
 status: draft
-updated: 2026-10-12
+updated: 2026-10-13
 depends_on: [ADR-002, ADR-003, ADR-006, ADR-007]
 ---
 
@@ -116,19 +116,31 @@ What the socket speaks now. `stage.v1` above waits. One JSON object per line, `\
 `hello` (game → booth, on every attach):
 
 ```json
-{"type":"hello","schema":"table.v0","mod":"ArcadeLink","version":"0.1.0","player":{"x":0,"y":0,"z":0,"facing_x":0,"facing_y":0},"actors":[]}
+{"type":"hello","schema":"table.v0","mod":"ArcadeLink","version":"0.1.4","player":{"x":0,"y":0,"z":0,"facing_x":0,"facing_y":0},"actors":[]}
 ```
 
-`player` is null when no pawn is loaded. `actors` is empty in this cut.
+`player` is null when no pawn is loaded. `actors` lists whoever this session spawned and can still measure. Each actor is `{name, x, y, z}`. `name` is the character-list spelling. A row may include `error` when that person is missing or did not land on the mark.
 
-`status` (booth → game), then the same shape back with the request id:
+`status` (listener → game), then the same shape back with the request id:
 
 ```json
 {"type":"status","id":"b1"}
 ```
 
 ```json
-{"type":"status","id":"b1","schema":"table.v0","mod":"ArcadeLink","version":"0.1.0","player":{"x":0,"y":0,"z":0,"facing_x":0,"facing_y":0},"actors":[]}
+{"type":"status","id":"b1","schema":"table.v0","mod":"ArcadeLink","version":"0.1.4","player":{"x":0,"y":0,"z":0,"facing_x":0,"facing_y":0},"actors":[{"name":"Hanako","x":0,"y":0,"z":0}]}
 ```
 
-`python tools/booth.py status` sends the request through the local control port `127.0.0.1:2078` and prints the reply.
+`place` (listener → game) takes `names`, the character-list spellings. One name puts that person in front of V. Several names put those people in a line, in the order given, about 1.6 m apart. V does not move. People not named are left where they are. A person already spawned under that name is moved, not copied. The reply uses the list's spelling in `name`, plus the measured position. A failed name has `error` and may include `matches` (up to five list spellings) when the name was ambiguous.
+
+```json
+{"type":"place","id":"b2","names":["Johnny Silverhand","Hanako"]}
+```
+
+```json
+{"type":"place","id":"b2","schema":"table.v0","mod":"ArcadeLink","version":"0.1.4","player":{"x":0,"y":0,"z":0,"facing_x":0,"facing_y":0},"actors":[{"name":"Johnny Silverhand","x":0,"y":0,"z":0},{"name":"Hanako","x":0,"y":0,"z":0}]}
+```
+
+No `names`, or an empty list, replies with `"error":"say who"` and spawns nobody. An unknown name replies `"error":"not in catalog"` on that row. Several list hits reply `"error":"say which one"` and `matches`. A unique shorter name is accepted and the reply's `name` is the full list spelling.
+
+`python tools/booth.py status` and `python tools/booth.py place "Hanako" "Johnny Silverhand"` send the request through the local control port `127.0.0.1:2078` and print the reply. Several names may also be one comma-separated argument.
