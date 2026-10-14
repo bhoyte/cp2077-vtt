@@ -1,11 +1,12 @@
 """Keep a connection open for the game on 127.0.0.1:2077.
 
-Stays up. Prints each hello. Asks the game where V is, or to place named people in front of her.
+Stays up. Prints each hello. Asks the game where V is, to place named people in front of her, or to clear them.
 
     python tools/booth.py
     python tools/booth.py status
     python tools/booth.py place "Johnny Silverhand"
     python tools/booth.py place "Johnny Silverhand" "Hanako" "Song So Ri"
+    python tools/booth.py clear
 """
 
 from __future__ import annotations
@@ -65,7 +66,7 @@ class Booth:
         if kind == "hello":
             print("[booth] hello " + json.dumps(message, separators=(",", ":")), flush=True)
             return
-        if kind in ("status", "place"):
+        if kind in ("status", "place", "clear"):
             fut = self.pending.pop(str(message.get("id")), None)
             if fut is not None and not fut.done():
                 fut.set_result(message)
@@ -108,6 +109,8 @@ def parse_control(line: bytes) -> tuple[str, dict | None, float]:
     text = line.strip().decode("utf-8", errors="replace")
     if text == "status":
         return "status", None, 3
+    if text == "clear":
+        return "clear", None, 20
     if text.startswith("{"):
         try:
             msg = json.loads(text)
@@ -115,6 +118,8 @@ def parse_control(line: bytes) -> tuple[str, dict | None, float]:
             return "", None, 3
         if isinstance(msg, dict) and msg.get("cmd") == "status":
             return "status", None, 3
+        if isinstance(msg, dict) and msg.get("cmd") == "clear":
+            return "clear", None, 20
         if isinstance(msg, dict) and msg.get("cmd") == "place":
             raw = msg.get("names") or []
             if isinstance(raw, str):
@@ -123,7 +128,11 @@ def parse_control(line: bytes) -> tuple[str, dict | None, float]:
                 names = names_from_args([str(item) for item in raw])
             else:
                 names = []
-            return "place", {"names": names}, min(90, 8 + 6 * max(len(names), 1))
+            extra = {"names": names}
+            for key in ("formation", "slot", "slots"):
+                if key in msg:
+                    extra[key] = msg[key]
+            return "place", extra, min(90, 8 + 6 * max(len(names), 1))
     return "", None, 3
 
 
@@ -201,6 +210,8 @@ async def ask(kind: str, names: list[str] | None = None) -> int:
         return 1
     if kind == "place":
         payload = json.dumps({"cmd": "place", "names": names or []}, separators=(",", ":")) + "\n"
+    elif kind == "clear":
+        payload = "clear\n"
     else:
         payload = "status\n"
     writer.write(payload.encode("utf-8"))
@@ -214,7 +225,7 @@ async def ask(kind: str, names: list[str] | None = None) -> int:
         message = json.loads(text) if text else {}
     except json.JSONDecodeError:
         return 2
-    return 0 if message.get("type") in ("status", "place") else 2
+    return 0 if message.get("type") in ("status", "place", "clear") else 2
 
 
 if __name__ == "__main__":
@@ -222,6 +233,8 @@ if __name__ == "__main__":
         sys.exit(asyncio.run(ask("status")))
     if len(sys.argv) > 1 and sys.argv[1] == "place":
         sys.exit(asyncio.run(ask("place", names_from_args(sys.argv[2:]))))
+    if len(sys.argv) > 1 and sys.argv[1] == "clear":
+        sys.exit(asyncio.run(ask("clear")))
     try:
         asyncio.run(serve())
     except KeyboardInterrupt:

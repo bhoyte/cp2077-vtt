@@ -116,7 +116,7 @@ What the socket speaks now. `stage.v1` above waits. One JSON object per line, `\
 `hello` (game → booth, on every attach):
 
 ```json
-{"type":"hello","schema":"table.v0","mod":"ArcadeLink","version":"0.1.4","player":{"x":0,"y":0,"z":0,"facing_x":0,"facing_y":0},"actors":[]}
+{"type":"hello","schema":"table.v0","mod":"ArcadeLink","version":"0.1.12","player":{"x":0,"y":0,"z":0,"facing_x":0,"facing_y":0},"actors":[]}
 ```
 
 `player` is null when no pawn is loaded. `actors` lists whoever this session spawned and can still measure. Each actor is `{name, x, y, z}`. `name` is the character-list spelling. A row may include `error` when that person is missing or did not land on the mark.
@@ -128,19 +128,29 @@ What the socket speaks now. `stage.v1` above waits. One JSON object per line, `\
 ```
 
 ```json
-{"type":"status","id":"b1","schema":"table.v0","mod":"ArcadeLink","version":"0.1.4","player":{"x":0,"y":0,"z":0,"facing_x":0,"facing_y":0},"actors":[{"name":"Hanako","x":0,"y":0,"z":0}]}
+{"type":"status","id":"b1","schema":"table.v0","mod":"ArcadeLink","version":"0.1.12","player":{"x":0,"y":0,"z":0,"facing_x":0,"facing_y":0},"actors":[{"name":"Hanako","x":0,"y":0,"z":0}]}
 ```
 
-`place` (listener → game) takes `names`, the character-list spellings. One name puts that person in front of V. Several names put those people in a line, in the order given, about 1.6 m apart. V does not move. People not named are left where they are. A person already spawned under that name is moved, not copied. The reply uses the list's spelling in `name`, plus the measured position. A failed name has `error` and may include `matches` (up to five list spellings) when the name was ambiguous.
+`place` (listener → game) takes `names`, the character-list spellings. One name puts that person in front of V. Two names stay in single file, about 1.6 m apart, first name closest. Three or more names make a wedge along the direction she is facing. The first name is the point, closest to her. The next two stand behind that point, one to each side, about 1.6 m from the point and from each other. Further names continue in pairs on the next rank. Optional `formation` is `rank` (side by side), `file`, or `wedge`. Optional `slot` and `slots` put that one name on one mark of a larger formation: slot 1 is the first mark, and `slots` is how many marks the formation has. V does not move. People not named are left where they are. A person already spawned under that name is moved, not copied. The reply uses the list's spelling in `name`, plus the measured position. A failed name has `error` and may include `matches` (up to five list spellings) when the name was ambiguous.
 
 ```json
 {"type":"place","id":"b2","names":["Johnny Silverhand","Hanako"]}
 ```
 
 ```json
-{"type":"place","id":"b2","schema":"table.v0","mod":"ArcadeLink","version":"0.1.4","player":{"x":0,"y":0,"z":0,"facing_x":0,"facing_y":0},"actors":[{"name":"Johnny Silverhand","x":0,"y":0,"z":0},{"name":"Hanako","x":0,"y":0,"z":0}]}
+{"type":"place","id":"b2","schema":"table.v0","mod":"ArcadeLink","version":"0.1.12","player":{"x":0,"y":0,"z":0,"facing_x":0,"facing_y":0},"actors":[{"name":"Johnny Silverhand","x":0,"y":0,"z":0},{"name":"Hanako","x":0,"y":0,"z":0}]}
+```
+
+`clear` (listener → game) takes no names. It despawns the people the appearance menu still lists, and anyone this mod has tagged. A tag is written when `place` gets a handle: the character-list name and the entity id, in `tagged.json` beside the mod. That file survives a mod reload. The reply's `removed` names who went. `missed` names tagged people the search did not find within 80 m of V; their tags stay. Street crowds, quest people, and anyone never tagged stay. V does not move. `actors` is empty afterward. People placed before tagging existed have no tag.
+
+```json
+{"type":"clear","id":"b3"}
+```
+
+```json
+{"type":"clear","id":"b3","schema":"table.v0","mod":"ArcadeLink","version":"0.1.12","player":{"x":0,"y":0,"z":0,"facing_x":0,"facing_y":0},"actors":[],"removed":["Hanako","Johnny Silverhand"],"missed":[]}
 ```
 
 No `names`, or an empty list, replies with `"error":"say who"` and spawns nobody. An unknown name replies `"error":"not in catalog"` on that row. Several list hits reply `"error":"say which one"` and `matches`. A unique shorter name is accepted and the reply's `name` is the full list spelling.
 
-`python tools/booth.py status` and `python tools/booth.py place "Hanako" "Johnny Silverhand"` send the request through the local control port `127.0.0.1:2078` and print the reply. Several names may also be one comma-separated argument.
+`python tools/booth.py status`, `python tools/booth.py place "Hanako" "Johnny Silverhand"`, and `python tools/booth.py clear` send the request through the local control port `127.0.0.1:2078` and print the reply. Several names may also be one comma-separated argument.

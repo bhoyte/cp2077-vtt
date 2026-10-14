@@ -2,7 +2,7 @@
 type: register
 title: Risk register
 status: active
-updated: 2026-10-11
+updated: 2026-10-13
 ---
 
 # Risk register
@@ -98,3 +98,9 @@ likelihood: medium
 impact: medium
 mitigation: Keep the live game on C: (ADR-012). Put stack zips, full-folder backups, and OBS recordings on D:. Set Steam to update-on-launch. Don't keep a second copy of the game on C:.
 owner: plan/phase-0-reboot
+
+### R-16 — A mod reload forgets spawned people, and a crowded mark slides the formation
+likelihood: high
+impact: medium
+mitigation: Keep reloading while this work is in progress. The appearance menu's spawn list and its saved copy were both empty after a reload on 2026-10-13, while the bodies can remain (F-031). `place` now writes each handle to `tagged.json`, and `clear` uses that file. Anyone spawned before the tag has none. A wedge also stepped 4.8 m forward because the previous file still occupied the nearer marks (raw/evidence/2026-10-13-place-wedge.md).
+owner: spawning, ADR-013

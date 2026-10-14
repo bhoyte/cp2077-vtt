@@ -148,3 +148,82 @@ Append-only. Format: `## [YYYY-MM-DD] op | title`. Newest at the bottom. `rg "^#
 ## [2026-10-13] ingest | Cursor chat archive
 - raw/chats/2026-10-13-named-place/: parent jsonl, session.md digest. No subagent threads.
 - Resume: read session.md after now.md.
+
+## [2026-10-13] decide | place uses single file
+- ArcadeLink 0.1.5. Several names stand one behind the other, about 1.6 m apart, along the direction V is facing. The first name is closest.
+- Contract table.v0, ADR-013, F-030 note. The 0.1.4 side-by-side result stays the verified observation. The running game needs one mod reload.
+
+## [2026-10-13] spike-report | named place, single file
+- Mods already on 0.1.5. Listener started, hello, then place Johnny Silverhand, Hanako, Song So Ri.
+- Johnny about 2.70 m along V's facing. Neighbors about 1.60 m further on that line. V stayed at -1536.57, 1194.66, 57.08.
+- Evidence: raw/evidence/2026-10-13-place-file.md. F-030 note, S-02 result. No frame yet.
+
+## [2026-10-13] spike-report | single-file frame
+- User frame raw/evidence/2026-10-13-place-file.png shows Johnny nearest, Hanako behind him, Song So Ri furthest. F-030 note, S-02.
+
+## [2026-10-13] decide | place uses a wedge
+- ArcadeLink 0.1.6. Three or more names: first name is the point, closest to V. The next two stand behind that point, one to each side, about 1.6 m apart. Two names stay in single file.
+- Contract table.v0, ADR-013, F-030 note. The wedge is not yet observed. The running game needs one mod reload.
+
+## [2026-10-13] spike-report | named place, wedge
+- Mods reloaded onto 0.1.6. Hello, then place Johnny Silverhand, Hanako, Song So Ri. Log says move, not a new copy.
+- Johnny is the point, about 7.51 m along V's facing. Hanako 0.80 m to V's left, Song So Ri 0.80 m to her right, both about 1.39 m further. Each pair about 1.60 m. V stayed at -1536.79, 1194.84, 57.01.
+- The wedge stepped forward three times 1.6 m because the file still occupied the nearer marks. Evidence: raw/evidence/2026-10-13-place-wedge.md. F-030, S-02. No frame yet.
+
+## [2026-10-13] spike-report | wedge frames
+- User frames show the three apart, and other bodies still standing farther down the roof. raw/evidence/2026-10-13-place-wedge.png, place-wedge-b.png. F-030, S-02.
+
+## [2026-10-13] decide | clear removes everyone near V
+- ArcadeLink 0.1.7. `clear` despawns every appearance-menu spawn, then deletes any other person within 18 m. V does not move.
+- Contract table.v0, ADR-013, tools/booth.py clear. The running game needs one mod reload before this command exists.
+
+## [2026-10-13] decide | clear stays on the appearance-menu list
+- The 18 m sweep would take street crowds. ArcadeLink 0.1.8 removes only people the appearance menu still lists, and the reply names them.
+- Contract table.v0, ADR-013. Supersedes the sweep in the entry above. The running game needs one mod reload.
+
+## [2026-10-13] spike-report | clear found an empty list
+- Mods on 0.1.8. `clear` replied `removed` empty. Log `clear removed=0`. Saved `spawnedNPCs` length 0.
+- Evidence: raw/evidence/2026-10-13-clear.md. F-031. No frame after the command.
+
+## [2026-10-13] decide | place tags entity ids
+- Reload drops the appearance menu's list (F-031, R-16). A crowded mark also slid the wedge forward.
+- ArcadeLink 0.1.9 writes each placed handle to tagged.json. `clear` removes tagged people within 80 m and reports anyone still missing. Street crowds stay. People already standing have no tag.
+- Contract table.v0, ADR-013, F-031 note, R-16. The running game needs one mod reload.
+
+## [2026-10-13] spike-report | place wrote three tags
+- Mods on 0.1.9. Place Johnny Silverhand, Hanako, Song So Ri. Log tagged each hash. File `tagged.json` holds the three ids.
+- Neighbors about 1.60 m. Johnny about 7.5 m along V's facing. Evidence: raw/evidence/2026-10-13-place-tags.md. F-031 note. No frame. A clear after another reload is not yet observed.
+
+## [2026-10-13] spike-report | clear after reload used the tags
+- Reloaded 0.1.9 at 23:37. Hello had no actors. `clear` removed Hanako, Song So Ri, and Johnny Silverhand. `missed` empty. Tag file left empty.
+- V stayed at -1540.39, 1200.91, 57.00. Evidence: raw/evidence/2026-10-13-clear-tags.md. F-031 note. No frame.
+
+## [2026-10-13] decide | place can use one formation slot
+- ArcadeLink 0.1.10. `formation` is rank, file, or wedge. `slot` and `slots` put one name on one mark of that formation.
+- Contract table.v0. The running game needs one mod reload before a sequence can use it.
+
+## [2026-10-13] spike-report | sequence stopped on the first despawn
+- 0.1.10 place put Johnny Silverhand on rank slot 1, at -1537.16, 1197.12, 57.01. V stayed at -1536.84, 1194.00, 57.01.
+- The following clear never logged and never replied. Status still listed Johnny. ArcadeLink 0.1.11 runs clear on the next game frame instead of inside the socket callback.
+
+## [2026-10-13] spike-report | sequence clear failed on the game frame
+- Reloaded 0.1.11 at 23:58. A clear before the drill removed the leftover Johnny Silverhand tag. Rank slot 1 then placed him at -1537.16, 1197.12, 57.01. V stayed at -1536.84, 1194.00, 57.01.
+- The next clear ran on the game frame and returned `failed`. Log: `init.lua:567: bad argument #2 to 'insert' (number expected, got string)`. The appearance-menu name is returned from `gsub`, which also returns a count, so `table.insert` treated the name as a position. He was still standing.
+- ArcadeLink 0.1.12 keeps only the name. Contract examples. The running game needs one mod reload. Evidence: raw/evidence/2026-10-13-sequence-clear.md.
+
+## [2026-10-14] spike-report | Johnny still on the roof
+- User frame shows Johnny Silverhand still standing in front of V after the failed clear. The running game is still 0.1.11. Tag file still holds him.
+- Evidence: raw/evidence/2026-10-13-sequence-johnny.png.
+
+## [2026-10-14] spike-report | nine slot spawns and despawns
+- Reloaded 0.1.12 at 00:02. A clear removed the leftover Johnny Silverhand. Then rank, file, and wedge, one slot at a time: Johnny Silverhand, Hanako, Song So Ri. Each stood about 4 s. Each clear removed that one person. `missed` stayed empty. Tag file left `[]`.
+- Marks stayed at about 2.70 m, neighbors about 1.60 m. V stayed at -1536.84, 1194.00, 57.01. Evidence: raw/evidence/2026-10-14-sequence.md. F-030, F-031, S-02. No frame.
+
+## [2026-10-14] handoff | session closed
+- now.md is the resume point. Sequential place and clear passed. Pose and freeze are next. The occupied-mark slide stays open (R-16).
+- Lint: 0 errors. The existing orphan warning on src-karpathy-wiki stays.
+- Chat archive: raw/chats/2026-10-13_2026-10-14-formations/.
+
+## [2026-10-14] ingest | Cursor chat archive
+- raw/chats/2026-10-13_2026-10-14-formations/: parent jsonl, one compaction segment, session.md digest. No subagent threads.
+- Resume: read session.md after now.md.

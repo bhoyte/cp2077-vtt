@@ -2,7 +2,7 @@
 type: register
 title: Facts register — engine, mods, vendors, host
 status: active
-updated: 2026-10-13
+updated: 2026-10-14
 stack: cp2077-2.31 / cet-1.37.1 / red4ext-1.30.0 / codeware-1.19.0 / archivexl-1.26.3 / amm-2.12.5 / redsocket-0.5.0
 ---
 
@@ -184,11 +184,17 @@ scope: cp2077-2.31 / cet-1.37.1 / red4ext-1.30.0 / codeware-1.19.0 / archivexl-1
 evidence: raw/evidence/2026-10-12-s02-roof-cast.md
 note: First passes stacked them at AMM's shared 1 m spawn (raw/evidence/2026-10-12-s02-separate.md). 21:54 pass with `Tools:TeleportNPCTo` put them on three marks and the freeze kept those coordinates (raw/evidence/2026-10-12-s02-aitp.md). Player unmoved.
 
-### F-030 — ArcadeLink `place` with character-list names puts those people in a line in front of V
+### F-030 — ArcadeLink `place` with character-list names puts those people on marks in front of V
 status: verified
 scope: cp2077-2.31 / cet-1.37.1 / red4ext-1.30.0 / codeware-1.19.0 / archivexl-1.26.3 / amm-2.12.5 / redsocket-0.5.0
-evidence: raw/evidence/2026-10-13-place-names.md
-note: Version 0.1.4. One command named Johnny Silverhand, Hanako, and Song So Ri. Reply positions were about 1.6 m apart at z 57. V stayed at -1536.78, 1195.77, 57.00. The user frame shows three separate bodies. They were not posed or frozen.
+evidence: raw/evidence/2026-10-13-place-names.md; raw/evidence/2026-10-13-place-file.md; raw/evidence/2026-10-13-place-wedge.md; raw/evidence/2026-10-14-sequence.md
+note: Version 0.1.4 stood them side by side, about 1.6 m apart. Version 0.1.5, 22:01, placed the three in single file; the user frame shows Johnny nearest, then Hanako, then Song So Ri. Version 0.1.6, 22:12, moved the same three into a wedge. Johnny is the point, about 7.51 m along V's facing. Hanako is 0.80 m to V's left and Song So Ri 0.80 m to her right, both about 1.39 m further out. Each pair is about 1.60 m apart. V stayed at -1536.79, 1194.84, 57.01. The wedge sat three steps of 1.6 m further than the usual 2.7 m point, because the nearer marks were already taken by the file. The user frames show that wedge, and other bodies still standing farther down the roof. They were not posed or frozen. Version 0.1.12, 00:03 on 2026-10-14, placed one slot at a time with the roof empty. Rank, file, and wedge all landed on the unshifted marks: center and point and the near file mark at about 2.70 m, neighbors about 1.60 m. V stayed at -1536.84, 1194.00, 57.01.
+
+### F-031 — ArcadeLink `clear` removes only the appearance menu's live spawn list; after a mod reload that list was empty
+status: verified
+scope: cp2077-2.31 / cet-1.37.1 / red4ext-1.30.0 / codeware-1.19.0 / archivexl-1.26.3 / amm-2.12.5 / redsocket-0.5.0
+evidence: raw/evidence/2026-10-13-clear.md; raw/evidence/2026-10-14-sequence.md
+note: Version 0.1.8, 23:21. Reply `removed` was empty. The menu's saved `spawnedNPCs` list also had length 0. V was at -1536.39, 1196.02, 57.00 in the reply. Version 0.1.9, 23:36, wrote `tagged.json` for the three. After another reload at 23:37, hello had no actors, and `clear` at 23:38 removed Hanako, Song So Ri, and Johnny Silverhand with `missed` empty. The tag file was `[]` afterward. V stayed at -1540.39, 1200.91, 57.00. No frame after the clear. Version 0.1.12, 00:03 on 2026-10-14, cleared one menu-listed person nine times in a row. Each reply named that person, `missed` was empty, and the tag file ended `[]`. A clear just before that, after a reload, removed Johnny Silverhand from the tag file while the menu list was empty.
 
 ### F-024 — An activated `simple_free_camera.ent` replaces the player view and holds a distinct angle; the game HUD stays drawn on top
 status: verified

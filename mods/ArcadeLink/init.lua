@@ -1,8 +1,12 @@
 -- ArcadeLink — the game side of the live session (ADR-013).
 -- Dials 127.0.0.1:2077, redials when the socket is down, answers status and place.
 -- place names people from the character list. One name puts that person in front of V.
--- Several names put those people in a line, in the order given. Anyone not named stays.
--- It does not move V. A person already spawned is moved, not copied.
+-- Three or more names make a wedge. The first name is the point, closest to V.
+-- The next names stand behind her, one to each side, about 1.6 m apart.
+-- Two names stay in single file. Anyone not named stays.
+-- clear removes the people the appearance menu still lists, and anyone this mod
+-- tagged in tagged.json. Street crowds stay. It does not move V.
+-- A person already spawned is moved, not copied.
 
 local json = require("link_json")
 local Cron = require("Cron")
@@ -18,10 +22,12 @@ local HOST = "127.0.0.1"
 local PORT = 2077
 local RETRY_S = 2.0
 local ATTEMPT_TIMEOUT_S = 5.0
-local VERSION = "0.1.4"
+local VERSION = "0.1.12"
 local lastInbound = 0
 local GAP = 1.6
 local FWD = 2.7
+local TAG_FILE = "tagged.json"
+local FIND_M = 80
 
 local socket = nil
 local connected = false
@@ -107,6 +113,111 @@ local function entityHash(entity)
     hash = tostring(entity:GetEntityID().hash)
   end)
   return hash
+end
+
+local function loadTags()
+  local tags = {}
+  local file = io.open(TAG_FILE, "r")
+  if file == nil then
+    return tags
+  end
+  local text = file:read("*a")
+  file:close()
+  local ok, decoded = pcall(json.decode, text)
+  if not ok or type(decoded) ~= "table" then
+    log("tag file unreadable")
+    return tags
+  end
+  for _, row in ipairs(decoded) do
+    if type(row) == "table" and row.hash ~= nil then
+      tags[tostring(row.hash)] = tostring(row.name or row.hash)
+    end
+  end
+  return tags
+end
+
+local function saveTags(tags)
+  local keys = {}
+  for hash in pairs(tags) do
+    table.insert(keys, hash)
+  end
+  table.sort(keys)
+  local rows = {}
+  for _, hash in ipairs(keys) do
+    table.insert(rows, { name = tags[hash], hash = hash })
+  end
+  local ok, encoded = pcall(json.encode, rows)
+  if not ok then
+    log("tag encode failed")
+    return
+  end
+  local file = io.open(TAG_FILE, "w")
+  if file == nil then
+    log("tag file unavailable")
+    return
+  end
+  file:write(encoded)
+  file:close()
+end
+
+local function remember(name, entity)
+  local hash = entityHash(entity)
+  if hash == nil then
+    log("tag missed " .. tostring(name))
+    return
+  end
+  local tags = loadTags()
+  tags[hash] = name
+  saveTags(tags)
+  log("tagged " .. tostring(name) .. " " .. hash)
+end
+
+local function dropTagged(tags, hashes)
+  for hash in pairs(hashes) do
+    tags[hash] = nil
+  end
+  saveTags(tags)
+end
+
+local function takeTagged(tags)
+  local found = {}
+  local player = currentPlayer()
+  if player == nil then
+    return found
+  end
+  local playerHash = entityHash(player)
+  pcall(function()
+    local searchQuery = Game["TSQ_NPC;"]()
+    searchQuery.maxDistance = FIND_M
+    local success, parts = Game.GetTargetingSystem():GetTargetParts(player, searchQuery)
+    if not success or parts == nil then
+      return
+    end
+    local seen = {}
+    for _, part in ipairs(parts) do
+      local entity = part:GetComponent(part):GetEntity()
+      local hash = entityHash(entity)
+      if entity ~= nil and hash ~= nil and hash ~= playerHash and tags[hash] ~= nil and not seen[hash] then
+        local isNpc = false
+        pcall(function()
+          isNpc = entity:IsNPC()
+        end)
+        if isNpc then
+          seen[hash] = true
+          table.insert(found, tags[hash])
+          tags[hash] = nil
+          pcall(function()
+            entity:Dispose()
+          end)
+          pcall(function()
+            getEntitySystem():DeleteEntity(entity:GetEntityID())
+          end)
+        end
+      end
+    end
+  end)
+  saveTags(tags)
+  return found
 end
 
 local function actorList()
@@ -339,19 +450,56 @@ local function collectSpots(player, ignoreHashes)
   return spots
 end
 
-local function chooseRights(n, player, spots)
-  local function rights(shift)
-    local list = {}
+local function formationKind(name, count)
+  local kind = string.lower(trim(tostring(name or "")))
+  if kind == "rank" or kind == "file" or kind == "wedge" then
+    return kind
+  end
+  if count >= 3 then
+    return "wedge"
+  end
+  return "file"
+end
+
+local function formationMarks(n, shift, kind)
+  local list = {}
+  if kind == "rank" then
     for i = 1, n do
-      list[i] = (i - (n + 1) / 2) * GAP + shift * GAP
+      list[i] = { FWD + shift * GAP, (i - (n + 1) / 2) * GAP }
     end
     return list
   end
+  if kind == "file" then
+    for i = 1, n do
+      list[i] = { FWD + (i - 1) * GAP + shift * GAP, 0 }
+    end
+    return list
+  end
+  local depth = GAP * math.sqrt(3) / 2
+  list[1] = { FWD + shift * GAP, 0 }
+  local placed = 1
+  local rank = 1
+  while placed < n do
+    local seats = math.min(2, n - placed)
+    local sides = { -1, 1 }
+    for s = 1, seats do
+      placed = placed + 1
+      list[placed] = {
+        FWD + rank * depth + shift * GAP,
+        sides[s] * (GAP / 2) * rank,
+      }
+    end
+    rank = rank + 1
+  end
+  return list
+end
+
+local function chooseMarks(n, player, spots, kind)
   local function clear(shift)
-    local list = rights(shift)
-    for _, right in ipairs(list) do
-      local mark = worldMark(player, FWD, right)
-      if mark == nil or blocked(mark, spots) then
+    local list = formationMarks(n, shift, kind)
+    for _, mark in ipairs(list) do
+      local world = worldMark(player, mark[1], mark[2])
+      if world == nil or blocked(world, spots) then
         return nil
       end
     end
@@ -362,14 +510,113 @@ local function chooseRights(n, player, spots)
     if found ~= nil then
       return found
     end
-    if step > 0 then
-      found = clear(-step)
-      if found ~= nil then
-        return found
-      end
+  end
+  return formationMarks(n, 0, kind)
+end
+
+local function chooseSlot(n, index, player, spots, kind)
+  local function at(shift)
+    local list = formationMarks(n, shift, kind)
+    local mark = list[index]
+    if mark == nil then
+      return nil
+    end
+    local world = worldMark(player, mark[1], mark[2])
+    if world == nil or blocked(world, spots) then
+      return nil
+    end
+    return mark
+  end
+  for step = 0, 6 do
+    local found = at(step)
+    if found ~= nil then
+      return found
     end
   end
-  return rights(0)
+  local list = formationMarks(n, 0, kind)
+  return list[index]
+end
+
+local function spawnLabel(spawn, key)
+  if type(spawn.name) == "string" and trim(spawn.name) ~= "" then
+    return (trim(spawn.name):gsub("%s*|%s*%d+$", ""))
+  end
+  return tostring(key)
+end
+
+local function clearSpawned(AMM)
+  local names = {}
+  local hashes = {}
+  if AMM == nil or AMM.Spawn == nil or type(AMM.Spawn.spawnedNPCs) ~= "table" then
+    return names, hashes
+  end
+  local keys = {}
+  for key in pairs(AMM.Spawn.spawnedNPCs) do
+    table.insert(keys, key)
+  end
+  table.sort(keys, function(a, b)
+    return tostring(a) < tostring(b)
+  end)
+  for _, key in ipairs(keys) do
+    local spawn = AMM.Spawn.spawnedNPCs[key]
+    if spawn ~= nil then
+      local hash = entityHash(liveEntity(spawn))
+      if hash ~= nil then
+        hashes[hash] = true
+      end
+      table.insert(names, spawnLabel(spawn, key))
+      despawnSpawn(AMM, spawn)
+      AMM.Spawn.spawnedNPCs[key] = nil
+    end
+  end
+  return names, hashes
+end
+
+local function missedNames(tags)
+  local names = {}
+  local keys = {}
+  for hash in pairs(tags) do
+    table.insert(keys, hash)
+  end
+  table.sort(keys)
+  for _, hash in ipairs(keys) do
+    table.insert(names, tags[hash])
+  end
+  return names
+end
+
+local function clearEveryone(id)
+  log("clear begin")
+  Cron.After(0, function()
+    local ok, err = pcall(function()
+      placeGen = placeGen + 1
+      placing = false
+      local AMM = GetMod("AppearanceMenuMod")
+      local names, hashes = clearSpawned(AMM)
+      local tags = loadTags()
+      dropTagged(tags, hashes)
+      local found = takeTagged(tags)
+      for _, name in ipairs(found) do
+        table.insert(names, name)
+      end
+      actors = {}
+      local message = snapshot()
+      message.type = "clear"
+      message.id = id
+      message.removed = names
+      message.missed = missedNames(loadTags())
+      send(message)
+      log("clear removed=" .. tostring(#names) .. " missed=" .. tostring(#message.missed))
+    end)
+    if not ok then
+      log("clear err " .. tostring(err))
+      local message = snapshot()
+      message.type = "clear"
+      message.id = id
+      message.error = "failed"
+      send(message)
+    end
+  end)
 end
 
 local function clearOnMark(player, mark, ignoreHashes)
@@ -515,6 +762,7 @@ local function settle(name, key, entity, spawnPos, yaw, gen, oneDone)
         actor.error = "not on the mark"
       end
       setFriendly(entity, name)
+      remember(name, entity)
       oneDone()
     end
   end)
@@ -586,7 +834,7 @@ local function spawnAndMove(job, AMM, gen, oneDone)
   end)
 end
 
-local function beginPlace(id, rawNames)
+local function beginPlace(id, rawNames, formation, slot, slots)
   if placing then
     local message = snapshot()
     message.type = "place"
@@ -693,11 +941,45 @@ local function beginPlace(id, rawNames)
     end
   end
   local spots = collectSpots(player, ignore)
-  local rights = chooseRights(#toPlace, player, spots)
-  for i, job in ipairs(toPlace) do
-    local mark, yaw = worldMark(player, FWD, rights[i])
-    job.mark = mark
-    job.yaw = yaw
+  local count = #toPlace
+  local slotN = tonumber(slot)
+  local slotsN = tonumber(slots) or 3
+  if slotN ~= nil and (#toPlace ~= 1 or slotN < 1 or slotN > slotsN or slotN ~= math.floor(slotN)) then
+    placing = false
+    for _, job in ipairs(toPlace) do
+      job.error = "bad slot"
+      job.record = nil
+    end
+    local message = snapshot()
+    message.type = "place"
+    message.id = id
+    message.actors = jobRows(jobs)
+    send(message)
+    return
+  end
+  if slotN ~= nil then
+    count = slotsN
+  end
+  local kind = formationKind(formation, count)
+  if slotN ~= nil then
+    local picked = chooseSlot(count, slotN, player, spots, kind)
+    if picked == nil then
+      toPlace[1].error = "bad slot"
+      toPlace[1].record = nil
+    else
+      local mark, yaw = worldMark(player, picked[1], picked[2])
+      toPlace[1].mark = mark
+      toPlace[1].yaw = yaw
+    end
+    log("slot " .. kind .. " " .. tostring(slotN) .. "/" .. tostring(count))
+  else
+    local marks = chooseMarks(count, player, spots, kind)
+    for i, job in ipairs(toPlace) do
+      local mark, yaw = worldMark(player, marks[i][1], marks[i][2])
+      job.mark = mark
+      job.yaw = yaw
+    end
+    log("formation " .. kind)
   end
   local pending = #toPlace
   local function oneDone()
@@ -790,7 +1072,12 @@ local function onCommand(raw)
   end
   if message.type == "place" then
     lastInbound = os.clock()
-    beginPlace(message.id, message.names)
+    beginPlace(message.id, message.names, message.formation, message.slot, message.slots)
+    return
+  end
+  if message.type == "clear" then
+    lastInbound = os.clock()
+    clearEveryone(message.id)
     return
   end
   log("ignored type=" .. tostring(message.type))

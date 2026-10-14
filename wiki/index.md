@@ -2,7 +2,7 @@
 type: hub
 title: Index — every page, one line each
 status: active
-updated: 2026-10-13
+updated: 2026-10-14
 ---
 
 # Index
@@ -39,7 +39,7 @@ Start at [now](now.md). Schema and operations: [AGENTS.md](../AGENTS.md). Timeli
 
 ## Spikes
 - [S-01](spikes/S-01-camera-rig.md) — partial: roof cameras switch and hold; HUD still draws; far park killed V
-- [S-02](spikes/S-02-puppetry.md) — puppetry; first roof slice posed and froze three actors, full soak not run
+- [S-02](spikes/S-02-puppetry.md) — puppetry; place formations and one-at-a-time slots observed; pose soak not run
 - [S-03](spikes/S-03-staged-violence.md) — gunfire FX, hit reactions, death on command
 - [S-04](spikes/S-04-resilience.md) — reconnect, restage, crash failover, soak, unfocused rendering
 - [S-05](spikes/S-05-capture-and-perf.md) — OBS capture and performance budget on this PC

@@ -4,7 +4,7 @@ id: S-02
 title: Puppetry — 6 actors at nodes, poses, freeze, expressions, weapons, no AI interference
 status: partial
 gate: G1
-updated: 2026-10-13
+updated: 2026-10-14
 depends_on: [F-004, F-005, F-008, F-012, F-013, F-025, F-026]
 ---
 
@@ -79,4 +79,10 @@ NPC-command pass (21:54). `Tools:TeleportNPCTo` put each puppet on a different m
 
 Named place (2026-10-13 09:59), through the session rather than the probe. One command named Johnny Silverhand, Hanako, and Song So Ri. The reply put them about 1.6 m apart. [2026-10-13-place-names.png](../../raw/evidence/2026-10-13-place-names.png) shows three separate bodies, Hanako centered. They were not posed or frozen. Weapons, expressions, look-at, and the 10-minute soak have not run.
 
-Evidence: [2026-10-12-s02-roof-cast.md](../../raw/evidence/2026-10-12-s02-roof-cast.md), [2026-10-12-s02-separate.md](../../raw/evidence/2026-10-12-s02-separate.md), [2026-10-12-s02-aitp.md](../../raw/evidence/2026-10-12-s02-aitp.md), [2026-10-13-place-names.md](../../raw/evidence/2026-10-13-place-names.md).
+Single file (2026-10-13 22:01), ArcadeLink 0.1.5, same three names. The reply put Johnny about 2.70 m along V's facing, then Hanako and Song So Ri each about 1.60 m further on that line. V stayed at -1536.57, 1194.66, 57.08. [2026-10-13-place-file.png](../../raw/evidence/2026-10-13-place-file.png) shows that file, Johnny nearest.
+
+Wedge (2026-10-13 22:12), ArcadeLink 0.1.6, same three names. The reply moved them: Johnny the point, Hanako to V's left rear, Song So Ri to V's right rear, each pair about 1.60 m apart. The wedge landed about 7.51 m out, three steps further than the usual point, because the file was still standing on the nearer marks. V stayed at -1536.79, 1194.84, 57.01. [2026-10-13-place-wedge.png](../../raw/evidence/2026-10-13-place-wedge.png) shows the three apart. [2026-10-13-place-wedge-b.png](../../raw/evidence/2026-10-13-place-wedge-b.png) shows more bodies still down the roof.
+
+Sequential slots (2026-10-14 00:03), ArcadeLink 0.1.12. One of Johnny Silverhand, Hanako, and Song So Ri at a time, in rank, then file, then wedge. Each stood about 4 s, then `clear` removed that one person. Marks stayed at the usual 2.70 m point, about 1.60 m apart. V stayed at -1536.84, 1194.00, 57.01. [2026-10-14-sequence.md](../../raw/evidence/2026-10-14-sequence.md). No frame. They were not posed or frozen.
+
+Evidence: [2026-10-12-s02-roof-cast.md](../../raw/evidence/2026-10-12-s02-roof-cast.md), [2026-10-12-s02-separate.md](../../raw/evidence/2026-10-12-s02-separate.md), [2026-10-12-s02-aitp.md](../../raw/evidence/2026-10-12-s02-aitp.md), [2026-10-13-place-names.md](../../raw/evidence/2026-10-13-place-names.md), [2026-10-13-place-file.md](../../raw/evidence/2026-10-13-place-file.md), [2026-10-13-place-wedge.md](../../raw/evidence/2026-10-13-place-wedge.md), [2026-10-14-sequence.md](../../raw/evidence/2026-10-14-sequence.md).
