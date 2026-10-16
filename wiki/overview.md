@@ -2,11 +2,13 @@
 type: hub
 title: Overview — Night City Arcade
 status: active
-updated: 2026-10-13
+updated: 2026-10-15
 depends_on: [F-001, F-004, F-007]
 ---
 
 # Night City Arcade — the project on one page
+
+Work is frozen ([ADR-014](decisions/ADR-014-project-frozen.md)). The description below is the design, not a live effort.
 
 **What it is:** a live broadcast where Twitch chat *is* the crew. Viewers join one of four squads, each piloting one
 edgerunner. A deterministic TTRPG engine resolves every action with provably-fair dice. Cyberpunk 2077 is the stage:

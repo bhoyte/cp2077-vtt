@@ -227,3 +227,17 @@ Append-only. Format: `## [YYYY-MM-DD] op | title`. Newest at the bottom. `rg "^#
 ## [2026-10-14] ingest | Cursor chat archive
 - raw/chats/2026-10-13_2026-10-14-formations/: parent jsonl, one compaction segment, session.md digest. No subagent threads.
 - Resume: read session.md after now.md.
+
+## [2026-10-15] decide | project frozen
+- ADR-014. Development stops. Night City still has no live director, and no other current game has that world and that hand.
+- Pose, furniture, a campaign slice, and further mod stacking wait on an explicit reopen. Gates stay defined and are not in progress.
+- ArcadeLink 0.1.12 place and clear stand. R-16 stays recorded. Stack pin unchanged.
+
+## [2026-10-15] handoff | session closed
+- now.md is the resume point. The project is frozen. Do not resume pose or a slice.
+- Lint: 0 errors. The existing orphan warning on src-karpathy-wiki stays.
+- Chat archive: raw/chats/2026-10-14_2026-10-15-freeze/.
+
+## [2026-10-15] ingest | Cursor chat archive
+- raw/chats/2026-10-14_2026-10-15-freeze/: parent jsonl, session.md digest. No subagent threads. No compaction segment.
+- Resume: read session.md after now.md.

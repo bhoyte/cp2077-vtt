@@ -2,11 +2,13 @@
 type: plan
 title: Roadmap — two tracks, four gates
 status: active
-updated: 2026-10-11
-depends_on: [ADR-003, ADR-008]
+updated: 2026-10-15
+depends_on: [ADR-003, ADR-008, ADR-014]
 ---
 
 # Roadmap
+
+Work is frozen ([ADR-014](../decisions/ADR-014-project-frozen.md)). The gates below stay defined. They are not in progress.
 
 Two tracks run in parallel. **Track A** needs the game (risk retirement). **Track B** doesn't (the show itself, built
 against the FakeStage). They merge at G3. Estimates are *focused working days*; agents can run Track B work in parallel with you.
